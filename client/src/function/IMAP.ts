@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { config } from "./config";
+import { config } from "../constants/config";
 export interface IMailbox { name: string, path: string }
 
 export interface IMessage {

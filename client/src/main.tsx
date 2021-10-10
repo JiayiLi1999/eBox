@@ -1,6 +1,6 @@
 // Style imports.
 import "normalize.css";
-import "../css/main.css";
+import "./constants/main.css";
 
 // React imports.
 import React from "react";
@@ -8,8 +8,8 @@ import ReactDOM from "react-dom";
 
 // App imports.
 import BaseLayout from "./components/BaseLayout";
-import * as IMAP from "./IMAP";
-import * as Contacts from "./Contacts";
+import * as IMAP from "./function/IMAP";
+import * as Contacts from "./function/Contacts";
 
 
 // Render the UI.

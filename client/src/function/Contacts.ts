@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { config } from "./config";
+import { config } from "../constants/config";
 
 export interface IContact { _id?: number, name: string, email: string }
 

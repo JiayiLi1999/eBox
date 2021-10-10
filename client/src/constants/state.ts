@@ -1,8 +1,8 @@
 // App imports.
-import * as Contacts from "./Contacts";
+import * as Contacts from "../function/Contacts";
 import { config } from "./config";
-import * as IMAP from "./IMAP";
-import * as SMTP from "./SMTP";
+import * as IMAP from "../function/IMAP";
+import * as SMTP from "../function/SMTP";
 
 
 /**

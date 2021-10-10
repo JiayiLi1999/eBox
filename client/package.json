@@ -4,7 +4,7 @@
   "description": "MailBag",
   "main": "main.tsx",
   "scripts": {
-    "start": "webpack --mode development",
+    "start": "webpack --mode=development",
     "build": "webpack --mode production"
   },
   "author": "",

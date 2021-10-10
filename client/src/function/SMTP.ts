@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "./config";
+import { config } from "../constants/config";
 
 
 // The worker that will perform SMTP operations.
