@@ -1,0 +1,19 @@
+{
+  "smtp" : {
+    "host" : "imap.gmail.com",
+    "port" : 993,
+    "auth" : {
+      "user" : "lijiayi606@gmail.com",
+      "pass" : "Ajia990817"
+    },
+    "secure":true
+  },
+  "imap" : {
+    "host" : "imap.gmail.com",
+    "port" : 993,
+    "auth" : {
+      "user" : "lijiayi606@gmail.com",
+      "pass" : "Ajia990817"
+    }
+  }
+}
