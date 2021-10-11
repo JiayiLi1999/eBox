@@ -2,7 +2,7 @@
   "name": "mailbag",
   "version": "1.0.0",
   "description": "MailBag",
-  "main": "main.tsx",
+  "main": "index.tsx",
   "scripts": {
     "start": "webpack --mode=development",
     "build": "webpack --mode production"
@@ -27,9 +27,12 @@
     "@material-ui/icons": "^4.5.1",
     "@types/material-ui": "^0.21.7",
     "@types/react": "^16.9.16",
+    "@types/react-redux": "^7.1.19",
     "axios": "^0.19.0",
     "normalize.css": "^8.0.1",
     "react": "^16.11.0",
-    "react-dom": "^16.11.0"
+    "react-dom": "^16.11.0",
+    "react-redux": "^7.2.5",
+    "redux": "^4.1.1"
   }
 }

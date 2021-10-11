@@ -16,12 +16,125 @@ import WelcomeView from "./WelcomeView";
 import ContactView from "./ContactView";
 import MessageView from "./MessageView";
 import { createState } from "../constants/state";
+import { connect, ConnectedProps } from "react-redux";
+
+import * as Contacts from "../function/Contacts";
+import * as IMAP from "../function/IMAP";
+import * as SMTP from "../function/SMTP";
+
+
+interface Contact{ 
+  _id : string,
+  name : string,
+  email : string 
+}
+
+interface mainInterface {
+  contacts?: Contact[],
+  isOn?: boolean,
+  currentView ?: string,
+  contactID ?: string,
+  contactName ?: string,
+  contactEmail ?: string,
+  messageID ?: string,
+  messageDate ?: string,
+  messageFrom ?: string,
+  messageTo ?: string,
+  messageSubject ?: string,
+  messageBody ?: string,
+  // mailboxes ?: [ ],
+  // messages ?: [ ],
+  currentMailbox ?: string,
+}
+
+interface IContactView{ currentView : string, contactID : string, contactName : string, contactEmail : string }
+
+interface DispatchProps {
+  // showContact:(id:string,name:string,email:string)=>void
+  addContactToList?:(inContact:Contacts.IContact)=>void;
+  showContact?:(inContact:IContactView)=>void;
+  saveContact?:()=>void;
+  deleteContact?:()=>void;
+}
+
+
+const mapState = (state: mainInterface) => ({
+  contacts:state.contacts,
+  isOn: state.isOn,
+  currentView : state.currentView,
+  contactID : state.contactID,
+  contactName : state.contactName,
+  contactEmail : state.contactEmail,
+  messageID : state.messageID,
+  messageDate : state.messageDate,
+  messageFrom : state.messageFrom,
+  messageTo : state.messageTo,
+  messageSubject : state.messageSubject,
+  messageBody : state.messageBody,
+  // mailboxes : state.mailboxes,
+  // messages : state.messages,
+  currentMailbox : state.currentMailbox,
+})
+
+
+
+export type Props =  mainInterface & DispatchProps;
+
+
+const mapDispatch = {
+  // showContact:(id,name,email) => ({inID: id, inName:name, inEmail:email}),
+  addContactToList:(inContact) => ({type:"ADD_CONTACT_TO_LIST",payload:inContact}),
+  showContact:(inContact:IContactView)=>({type:"SHOW_CONTACT",payload:inContact}),
+  saveContact:()=>({type:"SAVE_CONTACT",payload:{}}),
+  deleteContact:()=>({type:"DELETE_CONTACT",payload:{}}),
+}
+
+const connector = connect(mapState,mapDispatch);
+
+// The inferred type will look like:
+type PropsFromRedux = ConnectedProps<typeof connector>
+export interface MyProps extends PropsFromRedux {}
 
 
 /**
  * BaseLayout.
  */
-class BaseLayout extends Component {
+class BaseLayout extends React.Component<MyProps> {
+
+  constructor(props) {
+    super(props);
+  }
+
+  // baseComponent.state.showHidePleaseWait(true);
+  // async function getMailboxes() {
+  //   const imapWorker: IMAP.Worker = new IMAP.Worker();
+  //   const mailboxes: IMAP.IMailbox[] = await imapWorker.listMailboxes();
+  //   mailboxes.forEach((inMailbox) => {
+  //     baseComponent.state.addMailboxToList(inMailbox);
+  //   });
+  // }
+  componentDidMount(){
+    this.getContacts().then(()=>console.log("finish"));
+  }
+
+  async getContacts() {
+    const contactsWorker: Contacts.Worker = new Contacts.Worker();
+    const contacts: Contacts.IContact[] = await contactsWorker.listContacts();
+    contacts.forEach((inContact) => {
+      this.props.addContactToList(inContact);
+    });
+    console.log("hi",contacts.length);
+  }
+
+  showContacts(){
+
+    // this.setState({ currentView : "contact", contactID : inID, contactName : inName, contactEmail : inEmail });
+
+  }
+  // getMailboxes().then(function() {
+  //   // Now go fetch the user's contacts.
+  //   getContacts().then(() => baseComponent.state.showHidePleaseWait(false));
+  // });
 
 
   /**
@@ -36,7 +149,7 @@ class BaseLayout extends Component {
    * Render().
    */
   render() {
-
+    // this.getContacts().then(()=>console.log("finish"));
     return (
 
      <div className="appContainer">
@@ -54,17 +167,20 @@ class BaseLayout extends Component {
        <div className="centerArea">
         <div className="messageList"><MessageList state={ this.state } /></div>
         <div className="centerViews">
-          { this.state.currentView === "welcome" && <WelcomeView /> }
-          { (this.state.currentView === "message" || this.state.currentView === "compose") &&
+          { this.props.currentView === "welcome" && <WelcomeView /> }
+          { (this.props.currentView === "message" || this.props.currentView === "compose") &&
             <MessageView state={ this.state } />
           }
-          { (this.state.currentView === "contact" || this.state.currentView === "contactAdd") &&
-            <ContactView state={ this.state } />
+          { (this.props.currentView === "contact" || this.props.currentView === "contactAdd") &&
+            <ContactView contactName={this.props.contactName} contactEmail={this.props.contactEmail} currentView={this.props.currentView} 
+            deleteContact={this.props.deleteContact} saveContact={this.props.saveContact}/>
           }
         </div>
        </div>
 
-       <div className="contactList"><ContactList state={ this.state } /></div>
+       <div className="contactList">
+        <ContactList contacts={this.props.contacts} showContact={this.props.showContact}/>
+      </div>
 
      </div>
     );
@@ -75,4 +191,5 @@ class BaseLayout extends Component {
 } /* End class. */
 
 
-export default BaseLayout;
+
+export default connector(BaseLayout)
