@@ -7,98 +7,115 @@ import Button from "@material-ui/core/Button";
 import {Props} from "../constants/interfaces";
 import * as IMAP from "../function/IMAP";
 import * as SMTP from "../function/SMTP";
-
+import {config} from "../constants/config";
 /**
  * MessageView.
  */
 
-const onSendMessage = async(props) =>{
-  props.pleaseWaitVisible(true);
-  const imapWorker: IMAP.Worker = new IMAP.Worker();
-  await imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(()=>{props.pleaseWaitVisible(false);});
-  props.deleteMessage();
+interface States{
+  to:string,
+  subject:string,
+  body:string
 }
 
-const onDeleteMessage = async(props) =>{
-  props.pleaseWaitVisible(true);
-  const smtpWorker: SMTP.Worker = new SMTP.Worker();
-  await smtpWorker.sendMessage(props.messageTo, props.messageFrom, props.messageSubject,props.messageBody).then(()=>{props.pleaseWaitVisible(false);});
-  props.sendMessage();
-}
-
-const MessageView = ( props:Props ) => (
-
-  <form>
-
-    { /* ----- Message ID and date, just for informational purposes. ----- */ }
-    { props.currentView === "message" &&
-      <InputBase defaultValue={ `ID ${props.messageID}` } margin="dense" disabled={ true } fullWidth={ true }
-        className="messageInfoField" />
+class MessageView extends React.Component<Props,States>{
+  constructor(props){
+    super(props);
+    this.state={
+      to:"",
+      subject:"",
+      body:""
     }
-    { props.currentView === "message" && <br /> }
-    { props.currentView === "message" &&
-      <InputBase defaultValue={ props.messageDate } margin="dense" disabled={ true } fullWidth={ true }
-        className="messageInfoField" />
-    }
-    { props.currentView === "message" && <br /> }
+    this.onDeleteMessage.bind(this);
+    this.onSendMessage.bind(this);
+  }
 
-    { /* ----- From. ----- */ }
-    { props.currentView === "message" &&
-      <TextField margin="dense" variant="outlined" fullWidth={ true } label="From" value={ props.messageFrom }
-        disabled={ true } InputProps={{ style : { color : "#000000" } }} />
-    }
-    { props.currentView === "message" && <br /> }
+  async onDeleteMessage(){
+    this.props.pleaseWaitVisible(true);
+    const imapWorker: IMAP.Worker = new IMAP.Worker();
+    await imapWorker.deleteMessage(this.props.messageID, this.props.currentMailbox).then(()=>{this.props.pleaseWaitVisible(false);});
+    this.props.deleteMessage();
+  }
 
-    { /* ----- To. ----- */ }
-    { props.currentView === "compose" &&
+  async onSendMessage(){
+    this.props.pleaseWaitVisible(true);
+    const smtpWorker: SMTP.Worker = new SMTP.Worker();
+    await smtpWorker.sendMessage(this.state.to, config.userEmail, this.state.subject,this.state.body).then(()=>{this.props.pleaseWaitVisible(false);});
+    this.props.sendMessage();
+  }
+
+  render(){
+    console.log("message view props",this.props);
+  return(
+    <form>
+    { this.props.currentView === "message" && 
+    <div>
+      <InputBase defaultValue={ `ID ${this.props.messageID}` } margin="dense" disabled={ true } fullWidth={ true }
+        className="messageInfoField" /><br />
+        <InputBase defaultValue={ this.props.messageDate } margin="dense" disabled={ true } fullWidth={ true }
+        className="messageInfoField" /><br />
+        <TextField margin="dense" variant="outlined" fullWidth={ true } label="From" value={ this.props.messageFrom }
+        disabled={ true } InputProps={{ style : { color : "#000000" } }} /><br />
+        <TextField margin="dense" id="messageTo" variant="outlined" fullWidth={ true } label="To"
+        value={ this.props.messageTo } InputProps={{ style : { color : "#000000" } }}
+        /><br />
+        <TextField margin="dense" id="messageSubject" label="Subject" variant="outlined" fullWidth={ true }
+      value={ this.props.messageSubject } disabled={true }
+      InputProps={{ style : { color : "#000000" } }} 
+      /><br />
+        <TextField margin="dense" id="messageBody" variant="outlined" fullWidth={ true } multiline={ true } rows={ 12 }
+      value={ this.props.messageBody} disabled={ true }
+      InputProps={{ style : { color : "#000000" } }} 
+      /><br />
+    </div> 
+    }
+    { this.props.currentView === "compose" && 
+    <div>
       <TextField margin="dense" id="messageTo" variant="outlined" fullWidth={ true } label="To"
-        value={ props.messageTo } InputProps={{ style : { color : "#000000" } }}
-        // onChange={ props.fieldChangeHandler } 
+        value={ this.state.to } InputProps={{ style : { color : "#000000" } }}
+        onChange={(Event)=> this.setState({to:Event.target.value})} 
         />
+      <TextField margin="dense" id="messageSubject" label="Subject" variant="outlined" fullWidth={ true }
+        value={ this.state.subject } disabled={ false }
+        InputProps={{ style : { color : "#000000" } }} 
+        onChange={(Event)=> this.setState({subject:Event.target.value})} 
+        />
+      <br />
+      <TextField margin="dense" id="messageBody" variant="outlined" fullWidth={ true } multiline={ true } rows={ 12 }
+        value={ this.state.body } disabled={ false }
+        InputProps={{ style : { color : "#000000" } }} 
+        onChange={(Event)=> this.setState({body:Event.target.value})} 
+        />
+    </div> 
     }
-    { props.currentView === "compose" && <br /> }
-
-    { /* ----- Subject. ----- */ }
-    <TextField margin="dense" id="messageSubject" label="Subject" variant="outlined" fullWidth={ true }
-      value={ props.messageSubject } disabled={ props.currentView === "message" }
-      InputProps={{ style : { color : "#000000" } }} 
-      // onChange={ props.fieldChangeHandler } 
-      />
-    <br />
-
-    { /* ----- Message body. ----- */ }
-    <TextField margin="dense" id="messageBody" variant="outlined" fullWidth={ true } multiline={ true } rows={ 12 }
-      value={ props.messageBody } disabled={ props.currentView === "message" }
-      InputProps={{ style : { color : "#000000" } }} 
-      // onChange={ props.fieldChangeHandler } 
-      />
 
     { /* ----- Buttons. ----- */ }
 
-    { props.currentView === "compose" &&
+    { this.props.currentView === "compose" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-        onClick={()=>onSendMessage(props)}
+        onClick={()=>this.onSendMessage()}
         >
       Send
     </Button>
     }
-    { props.currentView === "message" &&
+    { this.props.currentView === "message" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10, marginRight:10 }}
-        onClick={ () => props.composeMessage("reply") }>
+        onClick={ () => this.props.composeMessage("REPLY") }>
         Reply
       </Button>
     }
-    { props.currentView === "message" &&
+    { this.props.currentView === "message" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-        onClick={() => onDeleteMessage(props) }
+        onClick={() => this.onDeleteMessage() }
         >
         Delete
       </Button>
     }
 
   </form>
-
-); /* MessageView. */
+  
+  )}
+}
 
 
 export default MessageView;

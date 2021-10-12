@@ -33,7 +33,7 @@ export default function(state = initialState, action) {
         }
       }
       case SHOW_CONTACT: {
-        console.log("show contact",state.currentView)
+        console.log("show contact",action.payload)
         return {
           ...state,
           currentView:"contact",
@@ -85,8 +85,8 @@ export default function(state = initialState, action) {
       }
 
       case SAVE_CONTACT:{
-        console.log("show contact",state.currentView)
-        const newContact = { _id : state.contactID, name : state.contactName, email : state.contactEmail };
+        const newContact = action.payload;
+        console.log("show contact",newContact)
         return{
             ...state,
             contacts:[...state.contacts,newContact],
@@ -169,6 +169,7 @@ export default function(state = initialState, action) {
         }
       }
       case SHOW_MESSAGE:{
+        console.log("SHOW_MESSAGE",action.payload.inMessage);
         return{
           ...state,
           currentView : "message",

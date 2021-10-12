@@ -39960,7 +39960,7 @@ exports.push([module.i, "/*! normalize.css v8.0.1 | MIT License | github.com/nec
 
 exports = module.exports = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "/* Container that the entire UI is in. */\n.appContainer {\n  display : grid;\n  grid-template-columns : 150px 1fr 240px;\n  grid-template-rows : 50px 1fr;\n  width : 100vw;\n  height : 100vh;\n}\n\n/* The toolbar up top. */\n.toolbar {\n  grid-column : 1 / 4;\n  grid-row : 1 / 1;\n  border-bottom : 1px solid #e0e0e0;\n  padding-top : 8px;\n  padding-left : 4px;\n}\n\n/* List of mailboxes on the left. */\n.mailboxList {\n  grid-column : 1 / 1;\n  grid-row : 2 / 2;\n  border-right : 1px solid #e0e0e0;\n  padding-top : 6px;\n  padding-left : 4px;\n  overflow : auto;\n}\n\n/* The center area (includes message list and message/contact views). */\n.centerArea {\n  display : grid;\n  grid-template-rows : 200px 1fr;\n}\n\n/* The message list at the top of the center area. */\n.messageList {\n  border-bottom : 1px solid #e0e0e0;\n  grid-row : 1 / 1;\n  overflow : auto;\n}\n\n/* The container for the message and contact views below the message list. */\n.centerViews {\n  grid-row : 2 / 2;\n  padding-top : 4px;\n  padding-left : 4px;\n  padding-right : 4px;\n  overflow : auto;\n}\n\n/* The contact list on the right. */\n.contactList {\n  grid-column : 3 / 3;\n  grid-row : 2 / 2;\n  border-left : 1px solid #e0e0e0;\n  padding-top : 4px;\n  padding-left : 4px;\n  overflow : auto;\n}\n\n/* Style to override default gray disabled color of the message ID and date fields in the message view. */\n.messageInfoField {\n  color : #000000!important;\n}\n", ""]);
+exports.push([module.i, "/* Container that the entire UI is in. */\n.appContainer {\n  display : grid;\n  grid-template-columns : 150px 1fr 240px;\n  grid-template-rows : 50px 1fr;\n  width : 100vw;\n  height : 100vh;\n  font-family: 'Courier New', Courier, monospace;\n}\n\n/* The toolbar up top. */\n.toolbar {\n  grid-column : 1 / 4;\n  grid-row : 1 / 1;\n  border-bottom : 1px solid #e0e0e0;\n  padding-top : 8px;\n  padding-left : 4px;\n}\n\n/* List of mailboxes on the left. */\n.mailboxList {\n  grid-column : 1 / 1;\n  grid-row : 2 / 2;\n  border-right : 1px solid #e0e0e0;\n  padding-top : 6px;\n  padding-left : 4px;\n  overflow : auto;\n}\n\n/* The center area (includes message list and message/contact views). */\n.centerArea {\n  display : grid;\n  grid-template-rows : 200px 1fr;\n}\n\n/* The message list at the top of the center area. */\n.messageList {\n  border-bottom : 1px solid #e0e0e0;\n  grid-row : 1 / 1;\n  overflow : auto;\n}\n\n/* The container for the message and contact views below the message list. */\n.centerViews {\n  grid-row : 2 / 2;\n  padding-top : 4px;\n  padding-left : 4px;\n  padding-right : 4px;\n  overflow : auto;\n}\n\n/* The contact list on the right. */\n.contactList {\n  grid-column : 3 / 3;\n  grid-row : 2 / 2;\n  border-left : 1px solid #e0e0e0;\n  padding-top : 4px;\n  padding-left : 4px;\n  overflow : auto;\n}\n\n/* Style to override default gray disabled color of the message ID and date fields in the message view. */\n.messageInfoField {\n  color : #000000!important;\n}\n", ""]);
 
 
 /***/ }),
@@ -84395,9 +84395,9 @@ class BaseLayout extends react_1.default.Component {
                 react_1.default.createElement("div", { className: "centerViews" },
                     this.props.currentView === "welcome" && react_1.default.createElement(WelcomeView_1.default, null),
                     (this.props.currentView === "message" || this.props.currentView === "compose") &&
-                        react_1.default.createElement(MessageView_1.default, { currentView: this.props.currentView, messageID: this.props.messageID, messageBody: this.props.messageBody, composeMessage: this.props.composeMessage, pleaseWaitVisible: this.props.pleaseWaitVisible, messageDate: this.props.messageDate, messageFrom: this.props.messageFrom, messageTo: this.props.messageTo, sendMessage: this.props.sendMessage, deleteMessage: this.props.deleteMessage }),
+                        react_1.default.createElement(MessageView_1.default, { currentView: this.props.currentView, messageID: this.props.messageID, messageBody: this.props.messageBody, composeMessage: this.props.composeMessage, pleaseWaitVisible: this.props.pleaseWaitVisible, messageDate: this.props.messageDate, messageFrom: this.props.messageFrom, messageTo: this.props.messageTo, sendMessage: this.props.sendMessage, deleteMessage: this.props.deleteMessage, messageSubject: this.props.messageSubject }),
                     (this.props.currentView === "contact" || this.props.currentView === "contactAdd") &&
-                        react_1.default.createElement(ContactView_1.default, { contactName: this.props.contactName, contactEmail: this.props.contactEmail, currentView: this.props.currentView, pleaseWaitVisible: this.props.pleaseWaitVisible, deleteContact: this.props.deleteContact, saveContact: this.props.saveContact, fieldChangeHandler: this.props.fieldChangeHandler, composeMessage: this.props.composeMessage }))),
+                        react_1.default.createElement(ContactView_1.default, { contactName: this.props.contactName, contactEmail: this.props.contactEmail, currentView: this.props.currentView, pleaseWaitVisible: this.props.pleaseWaitVisible, deleteContact: this.props.deleteContact, saveContact: this.props.saveContact, composeMessage: this.props.composeMessage }))),
             react_1.default.createElement("div", { className: "contactList" },
                 react_1.default.createElement(ContactList_1.default, { contacts: this.props.contacts, showContact: this.props.showContact, pleaseWaitVisible: this.props.pleaseWaitVisible }))));
     }
@@ -84480,28 +84480,51 @@ const Button_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Butto
 const core_1 = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/index.js");
 const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
 const Contacts = __importStar(__webpack_require__(/*! ../function/Contacts */ "./src/function/Contacts.ts"));
-const onDelete = (props) => __awaiter(void 0, void 0, void 0, function* () {
-    props.pleaseWaitVisible(true);
-    const imapWorker = new IMAP.Worker();
-    yield imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(props.deleteContact()).then(() => { props.pleaseWaitVisible(false); });
-});
-const onSave = (props) => __awaiter(void 0, void 0, void 0, function* () {
-    props.pleaseWaitVisible(true);
-    const contactsWorker = new Contacts.Worker();
-    const contact = yield contactsWorker.addContact({ name: props.contactName, email: props.contactEmail }).then(props.saveContact());
-    props.pleaseWaitVisible(false);
-});
-const ContactView = (props) => (react_1.default.createElement("form", null,
-    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactName", label: "Name", value: props.contactName, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 260 }, onChange: (Event) => props.fieldChangeHandler({ fieldName: Event.target.id, fieldValue: Event.target.value }) }),
-    react_1.default.createElement("br", null),
-    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactEmail", label: "Email", value: props.contactEmail, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 520 }, onChange: (Event) => props.fieldChangeHandler({ fieldName: Event.target.id, fieldValue: Event.target.value }) }),
-    react_1.default.createElement("br", null),
-    props.currentView === "contactAdd" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onSave(props) }, "Save"),
-    props.currentView === "contact" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => onDelete(props) }, "Delete"),
-    props.currentView === "contact" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => props.composeMessage("contact") }, "Send Email")));
+class ContactView extends react_1.default.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            stateEmail: "",
+            stateName: "",
+        };
+        this.onDelete.bind(this);
+        this.onSave.bind(this);
+    }
+    onDelete() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.props.pleaseWaitVisible(true);
+            const imapWorker = new IMAP.Worker();
+            yield imapWorker.deleteMessage(this.props.messageID, this.props.currentMailbox).then(() => this.props.deleteContact()).then(() => { this.props.pleaseWaitVisible(false); });
+        });
+    }
+    onSave() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.props.pleaseWaitVisible(true);
+            const contactsWorker = new Contacts.Worker();
+            const contact = yield contactsWorker.addContact({ name: this.state.stateName, email: this.state.stateEmail });
+            this.props.saveContact(contact);
+            this.props.pleaseWaitVisible(false);
+        });
+    }
+    render() {
+        return (react_1.default.createElement("form", null,
+            this.props.currentView === "contactAdd" &&
+                react_1.default.createElement("div", null,
+                    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactName", label: "Name", value: this.state.stateName, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: false, style: { width: 260 }, onChange: (Event) => this.setState({ stateName: Event.target.value }) }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactEmail", label: "Email", value: this.state.stateEmail, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: false, style: { width: 520 }, onChange: (Event) => this.setState({ stateEmail: Event.target.value }) }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => this.onSave() }, "Save")),
+            this.props.currentView === "contact" &&
+                react_1.default.createElement(react_1.default.Fragment, null,
+                    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactName", label: "Name", value: this.props.contactName, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: true, style: { width: 260 } }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactEmail", label: "Email", value: this.props.contactEmail, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: true, style: { width: 520 } }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => this.onDelete() }, "Delete"),
+                    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => this.props.composeMessage("CONTACT") }, "Send Email"))));
+    }
+}
 exports.default = ContactView;
 
 
@@ -84654,40 +84677,65 @@ const core_2 = __webpack_require__(/*! @material-ui/core */ "./node_modules/@mat
 const Button_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Button */ "./node_modules/@material-ui/core/esm/Button/index.js"));
 const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
 const SMTP = __importStar(__webpack_require__(/*! ../function/SMTP */ "./src/function/SMTP.ts"));
-const onSendMessage = (props) => __awaiter(void 0, void 0, void 0, function* () {
-    props.pleaseWaitVisible(true);
-    const imapWorker = new IMAP.Worker();
-    yield imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(() => { props.pleaseWaitVisible(false); });
-    props.deleteMessage();
-});
-const onDeleteMessage = (props) => __awaiter(void 0, void 0, void 0, function* () {
-    props.pleaseWaitVisible(true);
-    const smtpWorker = new SMTP.Worker();
-    yield smtpWorker.sendMessage(props.messageTo, props.messageFrom, props.messageSubject, props.messageBody).then(() => { props.pleaseWaitVisible(false); });
-    props.sendMessage();
-});
-const MessageView = (props) => (react_1.default.createElement("form", null,
-    props.currentView === "message" &&
-        react_1.default.createElement(core_1.InputBase, { defaultValue: `ID ${props.messageID}`, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
-    props.currentView === "message" && react_1.default.createElement("br", null),
-    props.currentView === "message" &&
-        react_1.default.createElement(core_1.InputBase, { defaultValue: props.messageDate, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
-    props.currentView === "message" && react_1.default.createElement("br", null),
-    props.currentView === "message" &&
-        react_1.default.createElement(core_2.TextField, { margin: "dense", variant: "outlined", fullWidth: true, label: "From", value: props.messageFrom, disabled: true, InputProps: { style: { color: "#000000" } } }),
-    props.currentView === "message" && react_1.default.createElement("br", null),
-    props.currentView === "compose" &&
-        react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageTo", variant: "outlined", fullWidth: true, label: "To", value: props.messageTo, InputProps: { style: { color: "#000000" } } }),
-    props.currentView === "compose" && react_1.default.createElement("br", null),
-    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageSubject", label: "Subject", variant: "outlined", fullWidth: true, value: props.messageSubject, disabled: props.currentView === "message", InputProps: { style: { color: "#000000" } } }),
-    react_1.default.createElement("br", null),
-    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageBody", variant: "outlined", fullWidth: true, multiline: true, rows: 12, value: props.messageBody, disabled: props.currentView === "message", InputProps: { style: { color: "#000000" } } }),
-    props.currentView === "compose" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onSendMessage(props) }, "Send"),
-    props.currentView === "message" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => props.composeMessage("reply") }, "Reply"),
-    props.currentView === "message" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onDeleteMessage(props) }, "Delete")));
+const config_1 = __webpack_require__(/*! ../constants/config */ "./src/constants/config.ts");
+class MessageView extends react_1.default.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            to: "",
+            subject: "",
+            body: ""
+        };
+        this.onDeleteMessage.bind(this);
+        this.onSendMessage.bind(this);
+    }
+    onDeleteMessage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.props.pleaseWaitVisible(true);
+            const imapWorker = new IMAP.Worker();
+            yield imapWorker.deleteMessage(this.props.messageID, this.props.currentMailbox).then(() => { this.props.pleaseWaitVisible(false); });
+            this.props.deleteMessage();
+        });
+    }
+    onSendMessage() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.props.pleaseWaitVisible(true);
+            const smtpWorker = new SMTP.Worker();
+            yield smtpWorker.sendMessage(this.state.to, config_1.config.userEmail, this.state.subject, this.state.body).then(() => { this.props.pleaseWaitVisible(false); });
+            this.props.sendMessage();
+        });
+    }
+    render() {
+        console.log("message view props", this.props);
+        return (react_1.default.createElement("form", null,
+            this.props.currentView === "message" &&
+                react_1.default.createElement("div", null,
+                    react_1.default.createElement(core_1.InputBase, { defaultValue: `ID ${this.props.messageID}`, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_1.InputBase, { defaultValue: this.props.messageDate, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", variant: "outlined", fullWidth: true, label: "From", value: this.props.messageFrom, disabled: true, InputProps: { style: { color: "#000000" } } }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageTo", variant: "outlined", fullWidth: true, label: "To", value: this.props.messageTo, InputProps: { style: { color: "#000000" } } }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageSubject", label: "Subject", variant: "outlined", fullWidth: true, value: this.props.messageSubject, disabled: true, InputProps: { style: { color: "#000000" } } }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageBody", variant: "outlined", fullWidth: true, multiline: true, rows: 12, value: this.props.messageBody, disabled: true, InputProps: { style: { color: "#000000" } } }),
+                    react_1.default.createElement("br", null)),
+            this.props.currentView === "compose" &&
+                react_1.default.createElement("div", null,
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageTo", variant: "outlined", fullWidth: true, label: "To", value: this.state.to, InputProps: { style: { color: "#000000" } }, onChange: (Event) => this.setState({ to: Event.target.value }) }),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageSubject", label: "Subject", variant: "outlined", fullWidth: true, value: this.state.subject, disabled: false, InputProps: { style: { color: "#000000" } }, onChange: (Event) => this.setState({ subject: Event.target.value }) }),
+                    react_1.default.createElement("br", null),
+                    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageBody", variant: "outlined", fullWidth: true, multiline: true, rows: 12, value: this.state.body, disabled: false, InputProps: { style: { color: "#000000" } }, onChange: (Event) => this.setState({ body: Event.target.value }) })),
+            this.props.currentView === "compose" &&
+                react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => this.onSendMessage() }, "Send"),
+            this.props.currentView === "message" &&
+                react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => this.props.composeMessage("REPLY") }, "Reply"),
+            this.props.currentView === "message" &&
+                react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => this.onDeleteMessage() }, "Delete")));
+    }
+}
 exports.default = MessageView;
 
 
@@ -84711,7 +84759,7 @@ const Button_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Butto
 const ContactMail_1 = __importDefault(__webpack_require__(/*! @material-ui/icons/ContactMail */ "./node_modules/@material-ui/icons/ContactMail.js"));
 const Email_1 = __importDefault(__webpack_require__(/*! @material-ui/icons/Email */ "./node_modules/@material-ui/icons/Email.js"));
 const Toolbar = (props) => (react_1.default.createElement("div", null,
-    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: () => props.composeMessage("new") },
+    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: () => props.composeMessage("NEW") },
         react_1.default.createElement(Email_1.default, { style: { marginRight: 10 } }),
         "New Message"),
     react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: props.addContact },
@@ -84798,21 +84846,20 @@ exports.mapState = (state) => ({
     currentMailbox: state.currentMailbox,
 });
 exports.mapDispatch = {
+    setCurrentMailbox: (inPath) => ({ type: ActionTypes.SET_CURRENT_MAILBOX, payload: inPath }),
     addContactToList: (inContact) => ({ type: ActionTypes.ADD_CONTACT_TO_LIST, payload: inContact }),
     addMailboxToList: (inMailbox) => ({ type: ActionTypes.ADD_MAILBOX_TO_LIST, payload: inMailbox }),
     addMessageToList: (inMessage) => ({ type: ActionTypes.ADD_MESSAGE_TO_LIST, payload: inMessage }),
     showContact: (inContact) => ({ type: ActionTypes.SHOW_CONTACT, payload: inContact }),
-    saveContact: () => ({ type: ActionTypes.SAVE_CONTACT, payload: {} }),
+    saveContact: (inContact) => ({ type: ActionTypes.SAVE_CONTACT, payload: inContact }),
     deleteContact: () => ({ type: ActionTypes.DELETE_CONTACT, payload: {} }),
-    fieldChangeHandler: (field) => ({ type: ActionTypes.FIELD_CHANGE, payload: field }),
-    composeMessage: (inType) => ({ type: ActionTypes.COMPOSE_MESSAGE, payload: inType }),
     addContact: () => ({ type: ActionTypes.ADD_CONTACT, payload: {} }),
-    setCurrentMailbox: (inPath) => ({ type: ActionTypes.SET_CURRENT_MAILBOX, payload: inPath }),
     getMessage: (messages) => ({ type: ActionTypes.GET_MESSAGE, payload: messages }),
     clearMessages: () => ({ type: ActionTypes.CLEAR_MESSAGES, payload: {} }),
     showMessage: (inMessage, mb) => ({ type: ActionTypes.SHOW_MESSAGE, payload: { inMessage, mb } }),
     sendMessage: () => ({ type: ActionTypes.SEND_MESSAGE, payload: {} }),
     deleteMessage: () => ({ type: ActionTypes.DELETE_MESSAGE, payload: {} }),
+    composeMessage: (inType) => ({ type: ActionTypes.COMPOSE_MESSAGE + "_" + inType, payload: {} }),
     pleaseWaitVisible: (inVisible) => ({ type: ActionTypes.PLEASE_WAIT_VISIBLE, payload: { inVisible } }),
 };
 
@@ -85127,7 +85174,7 @@ function default_1(state = exports.initialState, action) {
             return Object.assign(Object.assign({}, state), { isOn: !state.isOn });
         }
         case actionTypes_1.SHOW_CONTACT: {
-            console.log("show contact", state.currentView);
+            console.log("show contact", action.payload);
             return Object.assign(Object.assign({}, state), { currentView: "contact", contactID: action.payload.contactID, contactName: action.payload.contactName, contactEmail: action.payload.contactEmail });
         }
         case actionTypes_1.ADD_CONTACT: {
@@ -85146,8 +85193,8 @@ function default_1(state = exports.initialState, action) {
             return Object.assign(Object.assign({}, state), { messages: [...state.messages, currMessage] });
         }
         case actionTypes_1.SAVE_CONTACT: {
-            console.log("show contact", state.currentView);
-            const newContact = { _id: state.contactID, name: state.contactName, email: state.contactEmail };
+            const newContact = action.payload;
+            console.log("show contact", newContact);
             return Object.assign(Object.assign({}, state), { contacts: [...state.contacts, newContact], contactID: null, contactName: "", contactEmail: "" });
         }
         case actionTypes_1.DELETE_CONTACT: {
@@ -85180,6 +85227,7 @@ function default_1(state = exports.initialState, action) {
             return Object.assign(Object.assign({}, state), { messages: [] });
         }
         case actionTypes_1.SHOW_MESSAGE: {
+            console.log("SHOW_MESSAGE", action.payload.inMessage);
             return Object.assign(Object.assign({}, state), { currentView: "message", messageID: action.payload.inMessage.id, messageDate: action.payload.inMessage.date, messageFrom: action.payload.inMessage.from, messageTo: "", messageSubject: action.payload.inMessage.subject, messageBody: action.payload.mb });
         }
         case actionTypes_1.SEND_MESSAGE: {

@@ -15,7 +15,7 @@ const Toolbar = (props:Props) => (
 
   <div>
     <Button variant="contained" color="primary" size="small" style={{ marginRight:10 }}
-      onClick={ () => props.composeMessage("new") } >
+      onClick={ () => props.composeMessage("NEW") } >
       <NewMessageIcon style={{ marginRight:10 }} />New Message
     </Button>
     <Button variant="contained" color="primary" size="small" style={{ marginRight:10 }}

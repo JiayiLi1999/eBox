@@ -29,15 +29,15 @@ interface fieldChangerMode{
 }
 
 
-export function fieldChangeHandler(fieldName:string,fieldValue:string):fieldChangerMode{
-    return{
-        type:"FIELD_CHANGE",
-        payload:{
-            fieldName:fieldName,
-            fieldValue:fieldValue
-        }
-    }
-}
+// export function fieldChangeHandler(fieldName:string,fieldValue:string):fieldChangerMode{
+//     return{
+//         type:"FIELD_CHANGE",
+//         payload:{
+//             fieldName:fieldName,
+//             fieldValue:fieldValue
+//         }
+//     }
+// }
 
 export function toggleOn():contactMode{
     return{
@@ -46,29 +46,29 @@ export function toggleOn():contactMode{
     }
 }
 
-export function composeMessage(inType:string):contactMode{
-    switch (inType) {
+// export function composeMessage(inType:string):contactMode{
+//     switch (inType) {
 
-        case "new":
-            return{
-                type:COMPOSE_MESSAGE_NEW,
-                payload:{}
-            }
-        case "reply":
-            return{
-                type:COMPOSE_MESSAGE_REPLY,
-                payload:{}
-            }
+//         case "new":
+//             return{
+//                 type:COMPOSE_MESSAGE_NEW,
+//                 payload:{}
+//             }
+//         case "reply":
+//             return{
+//                 type:COMPOSE_MESSAGE_REPLY,
+//                 payload:{}
+//             }
 
-        case "contact":
-            return{
-                type:COMPOSE_MESSAGE_CONTACT,
-                payload:{}
-            }
+//         case "contact":
+//             return{
+//                 type:COMPOSE_MESSAGE_CONTACT,
+//                 payload:{}
+//             }
 
-      }
+//       }
 
-}
+// }
 
 export function showContact(inID: string, inName: string, inEmail: string): contactMode {
     return {
@@ -89,11 +89,14 @@ export function addContact():contactMode{
     }
 }
 
-export function saveContact():contactMode{
+export function saveContact(inContact):contactMode{
 
     return{
         type:SAVE_CONTACT,
         payload:{
+            contactID:inContact._id,
+            contactName:inContact.name,
+            contactEmail:inContact.email
         }
     }
 }

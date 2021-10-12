@@ -87,11 +87,11 @@ class BaseLayout extends React.Component<PropsFromRedux> {
           { this.props.currentView === "welcome" && <WelcomeView /> }
           { (this.props.currentView === "message" || this.props.currentView === "compose") &&
             <MessageView currentView={this.props.currentView} messageID={this.props.messageID} messageBody={this.props.messageBody} composeMessage={this.props.composeMessage} pleaseWaitVisible={this.props.pleaseWaitVisible}
-            messageDate={this.props.messageDate} messageFrom={this.props.messageFrom} messageTo={this.props.messageTo} sendMessage={this.props.sendMessage} deleteMessage={this.props.deleteMessage}/>
+            messageDate={this.props.messageDate} messageFrom={this.props.messageFrom} messageTo={this.props.messageTo} sendMessage={this.props.sendMessage} deleteMessage={this.props.deleteMessage} messageSubject={this.props.messageSubject}/> 
           }
           { (this.props.currentView === "contact" || this.props.currentView === "contactAdd") &&
             <ContactView contactName={this.props.contactName} contactEmail={this.props.contactEmail} currentView={this.props.currentView} pleaseWaitVisible={this.props.pleaseWaitVisible}
-            deleteContact={this.props.deleteContact} saveContact={this.props.saveContact} fieldChangeHandler={this.props.fieldChangeHandler} composeMessage={this.props.composeMessage}/>
+            deleteContact={this.props.deleteContact} saveContact={this.props.saveContact} composeMessage={this.props.composeMessage}/>
           }
         </div>
        </div>

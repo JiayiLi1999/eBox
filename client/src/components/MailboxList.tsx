@@ -15,9 +15,6 @@ import {Props} from "../constants/interfaces";
 const onSetCurrentMailbox = async (props,inPath) => {
   // console.log(inPath);
 
-  // const contactsWorker: Contacts.Worker = new Contacts.Worker();
-  // const contact: Contacts.IContact = await contactsWorker.addContact({ name : props.contactName, email : props.contactEmail }).then(props.saveContact());
-  
   props.setCurrentMailbox(inPath);
   props.clearMessages();
   props.pleaseWaitVisible(true);
