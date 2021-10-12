@@ -8,10 +8,25 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import * as IMAP from "../function/IMAP";
+
+import {Props} from "./BaseLayout";
+
 /**
  * MessageList.
  */
-const MessageList = ({ state }) => (
+
+var index = 0;
+
+const ClickMessage = async (props:Props,message:IMAP.IMessage) => {
+  props.pleaseWaitVisible(true);
+  const imapWorker: IMAP.Worker = new IMAP.Worker();
+  const mb: string = await imapWorker.getMessageBody(message.id, props.currentMailbox);
+  props.pleaseWaitVisible(false);
+  props.showMessage(message,mb);
+}
+
+const MessageList = (props:Props) => (
 
   <Table stickyHeader padding="none">
     <TableHead>
@@ -22,8 +37,8 @@ const MessageList = ({ state }) => (
       </TableRow>
     </TableHead>
     <TableBody>
-      { state.messages.map(message => (
-        <TableRow key={ message.id } onClick={ () => state.showMessage(message) }>
+      { props.messages && props.messages.map(message => (
+        <TableRow key={ index++ } onClick={()=>ClickMessage(props,message)}>
           <TableCell>{ new Date(message.date).toLocaleDateString() }</TableCell>
           <TableCell>{ message.from }</TableCell>
           <TableCell>{ message.subject }</TableCell>

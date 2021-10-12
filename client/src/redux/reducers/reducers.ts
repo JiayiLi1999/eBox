@@ -1,10 +1,13 @@
 import{SHOW_CONTACT,ADD_CONTACT,SAVE_CONTACT,DELETE_CONTACT,ADD_CONTACT_TO_LIST} from '../actionTypes';
 import * as Contacts from "../../function/Contacts";
+import { config } from "../../constants/config";
 
 import { Reducer } from 'redux';
+import { MessageSharp } from '@material-ui/icons';
 
 const initialState = {
     isOn:false,
+    isVisible:false,
     contacts : [ ],
     currentView : "welcome",
     contactID : null,
@@ -30,6 +33,7 @@ export default function(state = initialState, action) {
         }
       }
       case SHOW_CONTACT: {
+        console.log("show contact",state.currentView)
         return {
           ...state,
           currentView:"contact",
@@ -56,14 +60,32 @@ export default function(state = initialState, action) {
         };
       }
       case ADD_CONTACT_TO_LIST: {
-        console.log("contact",action.payload);
+        // console.log("contact",action.payload);
         const newContact = { _id : action.payload._id, name : action.payload.name, email : action.payload.email };
         return {
           ...state,
           contacts:[...state.contacts,newContact],
         };
       }
+      case "ADD_MAILBOX_TO_LIST":{
+        // console.log("mail",action.payload);
+        const newMailbox = {name:action.payload.name,path:action.payload.path};
+        return {
+          ...state,
+          mailboxes:[...state.mailboxes,newMailbox],
+        };
+      }
+      case "ADD_MESSAGE_TO_LIST":{
+        // console.log("mail",action.payload);
+        const currMessage = { id : action.payload.id, date : action.payload.date, from : action.payload.from, subject : action.payload.subject };
+        return{
+          ...state,
+          messages:[...state.messages,currMessage]
+        }
+      }
+
       case SAVE_CONTACT:{
+        console.log("show contact",state.currentView)
         const newContact = { _id : state.contactID, name : state.contactName, email : state.contactEmail };
         return{
             ...state,
@@ -81,6 +103,102 @@ export default function(state = initialState, action) {
             contactName : "",
             contactEmail : "",
           }
+      }
+      case "FIELD_CHANGE":{
+        if(action.payload.fieldName==="contactEmail"){
+          return{
+            ...state,
+            contactEmail : action.payload.contactEmail,
+        }
+        }else if(action.payload.fieldName==="contactName"){
+          return{
+            ...state,
+            contactName : action.payload.contactName,
+        }
+        }
+      }
+      case "COMPOSE_MESSAGE_NEW":{
+        return{
+          ...state,
+          currentView:"compose",
+          messageTo : "",
+          messageSubject : "", 
+          messageBody : "",
+          messageFrom : config.userEmail,
+        }
+      }
+
+      case "COMPOSE_MESSAGE_REPLY":{
+        return{
+          ...state,
+          currentView:"compose",
+          messageTo : state.messageFrom,
+          messageSubject : `Re: ${state.messageSubject}`, 
+          messageBody : `\n\n---- Original Message ----\n\n${state.messageBody}`,
+          messageFrom : config.userEmail,
+        }
+
+      }
+      case "COMPOSE_MESSAGE_CONTACT":{
+        return{
+          ...state,
+          currentView:"compose",
+          messageTo : state.contactEmail,
+          messageSubject : "", 
+          messageBody : "",
+          messageFrom : config.userEmail,
+        }
+      }
+      case "SET_CURRENT_MAILBOX":{
+        return{
+          ...state,
+          currentView : "welcome", 
+          currentMailbox : action.payload.mailPath,
+        }
+      }
+      case "GET_MESSAGE":{
+        return{
+          ...state,
+        }
+      }
+
+      case "CLEAR_MESSAGES":{
+        return{
+          ...state,
+          messages:[]
+        }
+      }
+      case "SHOW_MESSAGE":{
+        return{
+          ...state,
+          currentView : "message",
+          messageID : action.payload.inMessage.id,
+          messageDate: action.payload.inMessage.date,
+          messageFrom : action.payload.inMessage.from,
+          messageTo: "",
+          messageSubject: action.payload.inMessage.subject,
+          messageBody: action.payload.mb,
+        }
+      }
+      case "SEND_MESSAGE":{
+        return{
+          ...state,
+          currentView : "welcome",
+        }
+      }
+      case "DELETE_MESSAGE":{
+        return{
+          ...state,
+          messages:state.messages.filter((inElement) => inElement._id != state.messageID),
+          currentView : "welcome",
+        }
+      }
+      case "PLEASE_WAIT_VISIBLE":{
+        console.log(action.payload)
+        return{
+          ...state,
+          isVisible:action.payload.inVisible,
+        }
       }
       default:
         return state;

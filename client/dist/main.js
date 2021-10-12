@@ -84313,10 +84313,11 @@ const ContactList_1 = __importDefault(__webpack_require__(/*! ./ContactList */ "
 const WelcomeView_1 = __importDefault(__webpack_require__(/*! ./WelcomeView */ "./src/components/WelcomeView.tsx"));
 const ContactView_1 = __importDefault(__webpack_require__(/*! ./ContactView */ "./src/components/ContactView.tsx"));
 const MessageView_1 = __importDefault(__webpack_require__(/*! ./MessageView */ "./src/components/MessageView.tsx"));
-const state_1 = __webpack_require__(/*! ../constants/state */ "./src/constants/state.ts");
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 const Contacts = __importStar(__webpack_require__(/*! ../function/Contacts */ "./src/function/Contacts.ts"));
+const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
 const mapState = (state) => ({
+    isVisible: state.isVisible,
     contacts: state.contacts,
     isOn: state.isOn,
     currentView: state.currentView,
@@ -84329,22 +84330,47 @@ const mapState = (state) => ({
     messageTo: state.messageTo,
     messageSubject: state.messageSubject,
     messageBody: state.messageBody,
+    mailboxes: state.mailboxes,
+    messages: state.messages,
     currentMailbox: state.currentMailbox,
 });
 const mapDispatch = {
     addContactToList: (inContact) => ({ type: "ADD_CONTACT_TO_LIST", payload: inContact }),
+    addMailboxToList: (inMailbox) => ({ type: "ADD_MAILBOX_TO_LIST", payload: inMailbox }),
+    addMessageToList: (inMessage) => ({ type: "ADD_MESSAGE_TO_LIST", payload: inMessage }),
     showContact: (inContact) => ({ type: "SHOW_CONTACT", payload: inContact }),
     saveContact: () => ({ type: "SAVE_CONTACT", payload: {} }),
     deleteContact: () => ({ type: "DELETE_CONTACT", payload: {} }),
+    fieldChangeHandler: (field) => ({ type: "FIELD_CHANGE", payload: field }),
+    composeMessage: (inType) => ({ type: inType, payload: {} }),
+    addContact: () => ({ type: "ADD_CONTACT", payload: {} }),
+    setCurrentMailbox: (inPath) => ({ type: "SET_CURRENT_MAILBOX", payload: inPath }),
+    getMessage: (messages) => ({ type: "GET_MESSAGE", payload: messages }),
+    clearMessages: () => ({ type: "CLEAR_MESSAGES", payload: {} }),
+    showMessage: (inMessage, mb) => ({ type: "SHOW_MESSAGE", payload: { inMessage, mb } }),
+    sendMessage: () => ({ type: "SEND_MESSAGE", payload: {} }),
+    deleteMessage: () => ({ type: "DELETE_MESSAGE", payload: {} }),
+    pleaseWaitVisible: (inVisible) => ({ type: "PLEASE_WAIT_VISIBLE", payload: { inVisible } }),
 };
 const connector = react_redux_1.connect(mapState, mapDispatch);
 class BaseLayout extends react_1.default.Component {
     constructor(props) {
         super(props);
-        this.state = state_1.createState(this);
     }
     componentDidMount() {
-        this.getContacts().then(() => console.log("finish"));
+        this.props.pleaseWaitVisible(true);
+        this.getMailboxes().then(() => this.getContacts().then(() => console.log("finish")))
+            .then(() => { this.props.pleaseWaitVisible(false); });
+    }
+    getMailboxes() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imapWorker = new IMAP.Worker();
+            const mailboxes = yield imapWorker.listMailboxes();
+            mailboxes.forEach((inMailbox) => {
+                this.props.addMailboxToList(inMailbox);
+            });
+            console.log("mailboxes length:", mailboxes.length);
+        });
     }
     getContacts() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -84356,29 +84382,27 @@ class BaseLayout extends react_1.default.Component {
             console.log("hi", contacts.length);
         });
     }
-    showContacts() {
-    }
     render() {
         return (react_1.default.createElement("div", { className: "appContainer" },
-            react_1.default.createElement(Dialog_1.default, { open: this.state.pleaseWaitVisible, disableBackdropClick: true, disableEscapeKeyDown: true, transitionDuration: 0 },
+            react_1.default.createElement(Dialog_1.default, { open: this.props.isVisible, disableBackdropClick: true, disableEscapeKeyDown: true, transitionDuration: 0 },
                 react_1.default.createElement(DialogTitle_1.default, { style: { textAlign: "center" } }, "Please Wait"),
                 react_1.default.createElement(DialogContent_1.default, null,
                     react_1.default.createElement(DialogContentText_1.default, null, "...Contacting server..."))),
             react_1.default.createElement("div", { className: "toolbar" },
-                react_1.default.createElement(Toolbar_1.default, { state: this.state })),
+                react_1.default.createElement(Toolbar_1.default, { composeMessage: this.props.composeMessage, addContact: this.props.addContact })),
             react_1.default.createElement("div", { className: "mailboxList" },
-                react_1.default.createElement(MailboxList_1.default, { state: this.state })),
+                react_1.default.createElement(MailboxList_1.default, { mailboxes: this.props.mailboxes, currentView: this.props.currentView, setCurrentMailbox: this.props.setCurrentMailbox, clearMessages: this.props.clearMessages, addMessageToList: this.props.addMessageToList, pleaseWaitVisible: this.props.pleaseWaitVisible })),
             react_1.default.createElement("div", { className: "centerArea" },
                 react_1.default.createElement("div", { className: "messageList" },
-                    react_1.default.createElement(MessageList_1.default, { state: this.state })),
+                    react_1.default.createElement(MessageList_1.default, { messages: this.props.messages, showMessage: this.props.showMessage, pleaseWaitVisible: this.props.pleaseWaitVisible })),
                 react_1.default.createElement("div", { className: "centerViews" },
                     this.props.currentView === "welcome" && react_1.default.createElement(WelcomeView_1.default, null),
                     (this.props.currentView === "message" || this.props.currentView === "compose") &&
-                        react_1.default.createElement(MessageView_1.default, { state: this.state }),
+                        react_1.default.createElement(MessageView_1.default, { currentView: this.props.currentView, messageID: this.props.messageID, messageBody: this.props.messageBody, composeMessage: this.props.composeMessage, pleaseWaitVisible: this.props.pleaseWaitVisible, messageDate: this.props.messageDate, messageFrom: this.props.messageFrom, messageTo: this.props.messageTo, sendMessage: this.props.sendMessage, deleteMessage: this.props.deleteMessage }),
                     (this.props.currentView === "contact" || this.props.currentView === "contactAdd") &&
-                        react_1.default.createElement(ContactView_1.default, { contactName: this.props.contactName, contactEmail: this.props.contactEmail, currentView: this.props.currentView, deleteContact: this.props.deleteContact, saveContact: this.props.saveContact }))),
+                        react_1.default.createElement(ContactView_1.default, { contactName: this.props.contactName, contactEmail: this.props.contactEmail, currentView: this.props.currentView, pleaseWaitVisible: this.props.pleaseWaitVisible, deleteContact: this.props.deleteContact, saveContact: this.props.saveContact, fieldChangeHandler: this.props.fieldChangeHandler, composeMessage: this.props.composeMessage }))),
             react_1.default.createElement("div", { className: "contactList" },
-                react_1.default.createElement(ContactList_1.default, { contacts: this.props.contacts, showContact: this.props.showContact }))));
+                react_1.default.createElement(ContactList_1.default, { contacts: this.props.contacts, showContact: this.props.showContact, pleaseWaitVisible: this.props.pleaseWaitVisible }))));
     }
 }
 exports.default = connector(BaseLayout);
@@ -84410,10 +84434,10 @@ const ListItemText_1 = __importDefault(__webpack_require__(/*! @material-ui/core
 const onClick = (props, value) => {
     console.log("click!");
     console.log(value._id, value.name);
-    props.showContact({ currentView: "contact", contactID: value._id, contactName: value.name, contactEmail: value.email });
+    props.showContact({ contactID: value._id, contactName: value.name, contactEmail: value.email });
 };
 const ContactList = (props) => (react_1.default.createElement(List_1.default, null, props.contacts.map(value => {
-    return (react_1.default.createElement(ListItem_1.default, null,
+    return (react_1.default.createElement(ListItem_1.default, { key: value._id },
         react_1.default.createElement(ListItemAvatar_1.default, null,
             react_1.default.createElement(Avatar_1.default, null,
                 react_1.default.createElement(Person_1.default, null))),
@@ -84460,24 +84484,27 @@ const core_1 = __webpack_require__(/*! @material-ui/core */ "./node_modules/@mat
 const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
 const Contacts = __importStar(__webpack_require__(/*! ../function/Contacts */ "./src/function/Contacts.ts"));
 const onDelete = (props) => __awaiter(void 0, void 0, void 0, function* () {
+    props.pleaseWaitVisible(true);
     const imapWorker = new IMAP.Worker();
-    yield imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(props.deleteContact());
+    yield imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(props.deleteContact()).then(() => { props.pleaseWaitVisible(false); });
 });
 const onSave = (props) => __awaiter(void 0, void 0, void 0, function* () {
+    props.pleaseWaitVisible(true);
     const contactsWorker = new Contacts.Worker();
     const contact = yield contactsWorker.addContact({ name: props.contactName, email: props.contactEmail }).then(props.saveContact());
+    props.pleaseWaitVisible(false);
 });
 const ContactView = (props) => (react_1.default.createElement("form", null,
-    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactName", label: "Name", value: props.contactName, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 260 } }),
+    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactName", label: "Name", value: props.contactName, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 260 }, onChange: (Event) => props.fieldChangeHandler({ fieldName: Event.target.id, fieldValue: Event.target.value }) }),
     react_1.default.createElement("br", null),
-    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactEmail", label: "Email", value: props.contactEmail, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 520 } }),
+    react_1.default.createElement(core_1.TextField, { margin: "dense", id: "contactEmail", label: "Email", value: props.contactEmail, variant: "outlined", InputProps: { style: { color: "#000000" } }, disabled: props.currentView === "contact", style: { width: 520 }, onChange: (Event) => props.fieldChangeHandler({ fieldName: Event.target.id, fieldValue: Event.target.value }) }),
     react_1.default.createElement("br", null),
     props.currentView === "contactAdd" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: props.saveContact }, "Save"),
+        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onSave(props) }, "Save"),
     props.currentView === "contact" &&
         react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => onDelete(props) }, "Delete"),
     props.currentView === "contact" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onSave(props) }, "Send Email")));
+        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => props.composeMessage("contact") }, "Send Email")));
 exports.default = ContactView;
 
 
@@ -84492,15 +84519,44 @@ exports.default = ContactView;
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 const Chip_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Chip */ "./node_modules/@material-ui/core/esm/Chip/index.js"));
 const List_1 = __importDefault(__webpack_require__(/*! @material-ui/core/List */ "./node_modules/@material-ui/core/esm/List/index.js"));
-const MailboxList = ({ state }) => (react_1.default.createElement(List_1.default, null, state.mailboxes.map(value => {
-    return (react_1.default.createElement(Chip_1.default, { label: `${value.name}`, onClick: () => state.setCurrentMailbox(value.path), style: { width: 128, marginBottom: 10 }, color: state.currentMailbox === value.path ? "secondary" : "primary" }));
+const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
+const onSetCurrentMailbox = (props, inPath) => __awaiter(void 0, void 0, void 0, function* () {
+    props.setCurrentMailbox(inPath);
+    props.clearMessages();
+    props.pleaseWaitVisible(true);
+    const imapWorker = new IMAP.Worker();
+    const messages = yield imapWorker.listMessages(inPath);
+    props.pleaseWaitVisible(false);
+    messages.forEach((inMessage) => {
+        props.addMessageToList(inMessage);
+    });
+});
+var index = 0;
+const MailboxList = (props) => (react_1.default.createElement(List_1.default, null, props.mailboxes.map(value => {
+    return (react_1.default.createElement(Chip_1.default, { key: index++, label: `${value.name}`, onClick: () => onSetCurrentMailbox(props, value.path), style: { width: 128, marginBottom: 10 }, color: props.currentMailbox === value.path ? "secondary" : "primary" }));
 })));
 exports.default = MailboxList;
 
@@ -84516,8 +84572,24 @@ exports.default = MailboxList;
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
@@ -84526,13 +84598,22 @@ const TableBody_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Ta
 const TableCell_1 = __importDefault(__webpack_require__(/*! @material-ui/core/TableCell */ "./node_modules/@material-ui/core/esm/TableCell/index.js"));
 const TableHead_1 = __importDefault(__webpack_require__(/*! @material-ui/core/TableHead */ "./node_modules/@material-ui/core/esm/TableHead/index.js"));
 const TableRow_1 = __importDefault(__webpack_require__(/*! @material-ui/core/TableRow */ "./node_modules/@material-ui/core/esm/TableRow/index.js"));
-const MessageList = ({ state }) => (react_1.default.createElement(Table_1.default, { stickyHeader: true, padding: "none" },
+const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
+var index = 0;
+const ClickMessage = (props, message) => __awaiter(void 0, void 0, void 0, function* () {
+    props.pleaseWaitVisible(true);
+    const imapWorker = new IMAP.Worker();
+    const mb = yield imapWorker.getMessageBody(message.id, props.currentMailbox);
+    props.pleaseWaitVisible(false);
+    props.showMessage(message, mb);
+});
+const MessageList = (props) => (react_1.default.createElement(Table_1.default, { stickyHeader: true, padding: "none" },
     react_1.default.createElement(TableHead_1.default, null,
         react_1.default.createElement(TableRow_1.default, null,
             react_1.default.createElement(TableCell_1.default, { style: { width: 120 } }, "Date"),
             react_1.default.createElement(TableCell_1.default, { style: { width: 300 } }, "From"),
             react_1.default.createElement(TableCell_1.default, null, "Subject"))),
-    react_1.default.createElement(TableBody_1.default, null, state.messages.map(message => (react_1.default.createElement(TableRow_1.default, { key: message.id, onClick: () => state.showMessage(message) },
+    react_1.default.createElement(TableBody_1.default, null, props.messages && props.messages.map(message => (react_1.default.createElement(TableRow_1.default, { key: index++, onClick: () => ClickMessage(props, message) },
         react_1.default.createElement(TableCell_1.default, null, new Date(message.date).toLocaleDateString()),
         react_1.default.createElement(TableCell_1.default, null, message.from),
         react_1.default.createElement(TableCell_1.default, null, message.subject)))))));
@@ -84550,36 +84631,66 @@ exports.default = MessageList;
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 const core_1 = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/index.js");
 const core_2 = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/index.js");
 const Button_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Button */ "./node_modules/@material-ui/core/esm/Button/index.js"));
-const MessageView = ({ state }) => (react_1.default.createElement("form", null,
-    state.currentView === "message" &&
-        react_1.default.createElement(core_1.InputBase, { defaultValue: `ID ${state.messageID}`, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
-    state.currentView === "message" && react_1.default.createElement("br", null),
-    state.currentView === "message" &&
-        react_1.default.createElement(core_1.InputBase, { defaultValue: state.messageDate, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
-    state.currentView === "message" && react_1.default.createElement("br", null),
-    state.currentView === "message" &&
-        react_1.default.createElement(core_2.TextField, { margin: "dense", variant: "outlined", fullWidth: true, label: "From", value: state.messageFrom, disabled: true, InputProps: { style: { color: "#000000" } } }),
-    state.currentView === "message" && react_1.default.createElement("br", null),
-    state.currentView === "compose" &&
-        react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageTo", variant: "outlined", fullWidth: true, label: "To", value: state.messageTo, InputProps: { style: { color: "#000000" } }, onChange: state.fieldChangeHandler }),
-    state.currentView === "compose" && react_1.default.createElement("br", null),
-    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageSubject", label: "Subject", variant: "outlined", fullWidth: true, value: state.messageSubject, disabled: state.currentView === "message", InputProps: { style: { color: "#000000" } }, onChange: state.fieldChangeHandler }),
+const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
+const SMTP = __importStar(__webpack_require__(/*! ../function/SMTP */ "./src/function/SMTP.ts"));
+const onSendMessage = (props) => __awaiter(void 0, void 0, void 0, function* () {
+    props.pleaseWaitVisible(true);
+    const imapWorker = new IMAP.Worker();
+    yield imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(() => { props.pleaseWaitVisible(false); });
+    props.deleteMessage();
+});
+const onDeleteMessage = (props) => __awaiter(void 0, void 0, void 0, function* () {
+    props.pleaseWaitVisible(true);
+    const smtpWorker = new SMTP.Worker();
+    yield smtpWorker.sendMessage(props.messageTo, props.messageFrom, props.messageSubject, props.messageBody).then(() => { props.pleaseWaitVisible(false); });
+    props.sendMessage();
+});
+const MessageView = (props) => (react_1.default.createElement("form", null,
+    props.currentView === "message" &&
+        react_1.default.createElement(core_1.InputBase, { defaultValue: `ID ${props.messageID}`, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
+    props.currentView === "message" && react_1.default.createElement("br", null),
+    props.currentView === "message" &&
+        react_1.default.createElement(core_1.InputBase, { defaultValue: props.messageDate, margin: "dense", disabled: true, fullWidth: true, className: "messageInfoField" }),
+    props.currentView === "message" && react_1.default.createElement("br", null),
+    props.currentView === "message" &&
+        react_1.default.createElement(core_2.TextField, { margin: "dense", variant: "outlined", fullWidth: true, label: "From", value: props.messageFrom, disabled: true, InputProps: { style: { color: "#000000" } } }),
+    props.currentView === "message" && react_1.default.createElement("br", null),
+    props.currentView === "compose" &&
+        react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageTo", variant: "outlined", fullWidth: true, label: "To", value: props.messageTo, InputProps: { style: { color: "#000000" } } }),
+    props.currentView === "compose" && react_1.default.createElement("br", null),
+    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageSubject", label: "Subject", variant: "outlined", fullWidth: true, value: props.messageSubject, disabled: props.currentView === "message", InputProps: { style: { color: "#000000" } } }),
     react_1.default.createElement("br", null),
-    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageBody", variant: "outlined", fullWidth: true, multiline: true, rows: 12, value: state.messageBody, disabled: state.currentView === "message", InputProps: { style: { color: "#000000" } }, onChange: state.fieldChangeHandler }),
-    state.currentView === "compose" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: state.sendMessage }, "Send"),
-    state.currentView === "message" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => state.showComposeMessage("reply") }, "Reply"),
-    state.currentView === "message" &&
-        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: state.deleteMessage }, "Delete")));
+    react_1.default.createElement(core_2.TextField, { margin: "dense", id: "messageBody", variant: "outlined", fullWidth: true, multiline: true, rows: 12, value: props.messageBody, disabled: props.currentView === "message", InputProps: { style: { color: "#000000" } } }),
+    props.currentView === "compose" &&
+        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onSendMessage(props) }, "Send"),
+    props.currentView === "message" &&
+        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10, marginRight: 10 }, onClick: () => props.composeMessage("reply") }, "Reply"),
+    props.currentView === "message" &&
+        react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginTop: 10 }, onClick: () => onDeleteMessage(props) }, "Delete")));
 exports.default = MessageView;
 
 
@@ -84602,11 +84713,11 @@ const react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules
 const Button_1 = __importDefault(__webpack_require__(/*! @material-ui/core/Button */ "./node_modules/@material-ui/core/esm/Button/index.js"));
 const ContactMail_1 = __importDefault(__webpack_require__(/*! @material-ui/icons/ContactMail */ "./node_modules/@material-ui/icons/ContactMail.js"));
 const Email_1 = __importDefault(__webpack_require__(/*! @material-ui/icons/Email */ "./node_modules/@material-ui/icons/Email.js"));
-const Toolbar = ({ state }) => (react_1.default.createElement("div", null,
-    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: () => state.showComposeMessage("new") },
+const Toolbar = (props) => (react_1.default.createElement("div", null,
+    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: () => props.composeMessage("new") },
         react_1.default.createElement(Email_1.default, { style: { marginRight: 10 } }),
         "New Message"),
-    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: state.showAddContact },
+    react_1.default.createElement(Button_1.default, { variant: "contained", color: "primary", size: "small", style: { marginRight: 10 }, onClick: props.addContact },
         react_1.default.createElement(ContactMail_1.default, { style: { marginRight: 10 } }),
         "New Contact")));
 exports.default = Toolbar;
@@ -84676,198 +84787,6 @@ var update = __webpack_require__(/*! ../../node_modules/style-loader/dist/runtim
 if (content.locals) {
   module.exports = content.locals;
 }
-
-
-/***/ }),
-
-/***/ "./src/constants/state.ts":
-/*!********************************!*\
-  !*** ./src/constants/state.ts ***!
-  \********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const Contacts = __importStar(__webpack_require__(/*! ../function/Contacts */ "./src/function/Contacts.ts"));
-const config_1 = __webpack_require__(/*! ./config */ "./src/constants/config.ts");
-const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
-const SMTP = __importStar(__webpack_require__(/*! ../function/SMTP */ "./src/function/SMTP.ts"));
-function createState(inParentComponent) {
-    return {
-        pleaseWaitVisible: false,
-        contacts: [],
-        mailboxes: [],
-        messages: [],
-        currentView: "welcome",
-        currentMailbox: null,
-        messageID: null,
-        messageDate: null,
-        messageFrom: null,
-        messageTo: null,
-        messageSubject: null,
-        messageBody: null,
-        contactID: null,
-        contactName: null,
-        contactEmail: null,
-        showHidePleaseWait: function (inVisible) {
-            this.setState({ pleaseWaitVisible: inVisible });
-        }.bind(inParentComponent),
-        showContact: function (inID, inName, inEmail) {
-            console.log("state.showContact()", inID, inName, inEmail);
-            this.setState({ currentView: "contact", contactID: inID, contactName: inName, contactEmail: inEmail });
-        }.bind(inParentComponent),
-        showAddContact: function () {
-            console.log("state.showAddContact()");
-            this.setState({ currentView: "contactAdd", contactID: null, contactName: "", contactEmail: "" });
-        }.bind(inParentComponent),
-        showMessage: function (inMessage) {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.showMessage()", inMessage);
-                this.state.showHidePleaseWait(true);
-                const imapWorker = new IMAP.Worker();
-                const mb = yield imapWorker.getMessageBody(inMessage.id, this.state.currentMailbox);
-                this.state.showHidePleaseWait(false);
-                this.setState({ currentView: "message",
-                    messageID: inMessage.id, messageDate: inMessage.date, messageFrom: inMessage.from,
-                    messageTo: "", messageSubject: inMessage.subject, messageBody: mb
-                });
-            });
-        }.bind(inParentComponent),
-        showComposeMessage: function (inType) {
-            console.log("state.showComposeMessage()");
-            switch (inType) {
-                case "new":
-                    this.setState({ currentView: "compose",
-                        messageTo: "", messageSubject: "", messageBody: "",
-                        messageFrom: config_1.config.userEmail
-                    });
-                    break;
-                case "reply":
-                    this.setState({ currentView: "compose",
-                        messageTo: this.state.messageFrom, messageSubject: `Re: ${this.state.messageSubject}`,
-                        messageBody: `\n\n---- Original Message ----\n\n${this.state.messageBody}`, messageFrom: config_1.config.userEmail
-                    });
-                    break;
-                case "contact":
-                    this.setState({ currentView: "compose",
-                        messageTo: this.state.contactEmail, messageSubject: "", messageBody: "",
-                        messageFrom: config_1.config.userEmail
-                    });
-                    break;
-            }
-        }.bind(inParentComponent),
-        addMailboxToList: function (inMailbox) {
-            console.log("state.addMailboxToList()", inMailbox);
-            const cl = this.state.mailboxes.slice(0);
-            cl.push(inMailbox);
-            this.setState({ mailboxes: cl });
-        }.bind(inParentComponent),
-        addContactToList: function (inContact) {
-            console.log("state.addContactToList()", inContact);
-            const cl = this.state.contacts.slice(0);
-            cl.push({ _id: inContact._id, name: inContact.name, email: inContact.email });
-            this.setState({ contacts: cl });
-        }.bind(inParentComponent),
-        addMessageToList: function (inMessage) {
-            console.log("state.addMessageToList()", inMessage);
-            const cl = this.state.messages.slice(0);
-            cl.push({ id: inMessage.id, date: inMessage.date, from: inMessage.from, subject: inMessage.subject });
-            this.setState({ messages: cl });
-        }.bind(inParentComponent),
-        clearMessages: function () {
-            console.log("state.clearMessages()");
-            this.setState({ messages: [] });
-        }.bind(inParentComponent),
-        setCurrentMailbox: function (inPath) {
-            console.log("state.setCurrentMailbox()", inPath);
-            this.setState({ currentView: "welcome", currentMailbox: inPath });
-            this.state.getMessages(inPath);
-        }.bind(inParentComponent),
-        getMessages: function (inPath) {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.getMessages()");
-                this.state.showHidePleaseWait(true);
-                const imapWorker = new IMAP.Worker();
-                const messages = yield imapWorker.listMessages(inPath);
-                this.state.showHidePleaseWait(false);
-                this.state.clearMessages();
-                messages.forEach((inMessage) => {
-                    this.state.addMessageToList(inMessage);
-                });
-            });
-        }.bind(inParentComponent),
-        fieldChangeHandler: function (inEvent) {
-            console.log("state.fieldChangeHandler()", inEvent.target.id, inEvent.target.value);
-            if (inEvent.target.id === "contactName" && inEvent.target.value.length > 16) {
-                return;
-            }
-            this.setState({ [inEvent.target.id]: inEvent.target.value });
-        }.bind(inParentComponent),
-        saveContact: function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.saveContact()", this.state.contactID, this.state.contactName, this.state.contactEmail);
-                const cl = this.state.contacts.slice(0);
-                this.state.showHidePleaseWait(true);
-                const contactsWorker = new Contacts.Worker();
-                const contact = yield contactsWorker.addContact({ name: this.state.contactName, email: this.state.contactEmail });
-                this.state.showHidePleaseWait(false);
-                cl.push(contact);
-                this.setState({ contacts: cl, contactID: null, contactName: "", contactEmail: "" });
-            });
-        }.bind(inParentComponent),
-        deleteContact: function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.deleteContact()", this.state.contactID);
-                this.state.showHidePleaseWait(true);
-                const contactsWorker = new Contacts.Worker();
-                yield contactsWorker.deleteContact(this.state.contactID);
-                this.state.showHidePleaseWait(false);
-                const cl = this.state.contacts.filter((inElement) => inElement._id != this.state.contactID);
-                this.setState({ contacts: cl, contactID: null, contactName: "", contactEmail: "" });
-            });
-        }.bind(inParentComponent),
-        deleteMessage: function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.deleteMessage()", this.state.messageID);
-                this.state.showHidePleaseWait(true);
-                const imapWorker = new IMAP.Worker();
-                yield imapWorker.deleteMessage(this.state.messageID, this.state.currentMailbox);
-                this.state.showHidePleaseWait(false);
-                const cl = this.state.messages.filter((inElement) => inElement.id != this.state.messageID);
-                this.setState({ messages: cl, currentView: "welcome" });
-            });
-        }.bind(inParentComponent),
-        sendMessage: function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log("state.sendMessage()", this.state.messageTo, this.state.messageFrom, this.state.messageSubject, this.state.messageBody);
-                this.state.showHidePleaseWait(true);
-                const smtpWorker = new SMTP.Worker();
-                yield smtpWorker.sendMessage(this.state.messageTo, this.state.messageFrom, this.state.messageSubject, this.state.messageBody);
-                this.state.showHidePleaseWait(false);
-                this.setState({ currentView: "welcome" });
-            });
-        }.bind(inParentComponent)
-    };
-}
-exports.createState = createState;
 
 
 /***/ }),
@@ -85076,10 +84995,10 @@ exports.DELETE_MESSAGE = "DELETE_MESSAGE";
 
 /***/ }),
 
-/***/ "./src/redux/reducers/contact.ts":
-/*!***************************************!*\
-  !*** ./src/redux/reducers/contact.ts ***!
-  \***************************************/
+/***/ "./src/redux/reducers/reducers.ts":
+/*!****************************************!*\
+  !*** ./src/redux/reducers/reducers.ts ***!
+  \****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -85087,8 +85006,10 @@ exports.DELETE_MESSAGE = "DELETE_MESSAGE";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const actionTypes_1 = __webpack_require__(/*! ../actionTypes */ "./src/redux/actionTypes.ts");
+const config_1 = __webpack_require__(/*! ../../constants/config */ "./src/constants/config.ts");
 const initialState = {
     isOn: false,
+    isVisible: false,
     contacts: [],
     currentView: "welcome",
     contactID: null,
@@ -85110,22 +85031,70 @@ function default_1(state = initialState, action) {
             return Object.assign(Object.assign({}, state), { isOn: !state.isOn });
         }
         case actionTypes_1.SHOW_CONTACT: {
+            console.log("show contact", state.currentView);
             return Object.assign(Object.assign({}, state), { currentView: "contact", contactID: action.payload.contactID, contactName: action.payload.contactName, contactEmail: action.payload.contactEmail });
         }
         case actionTypes_1.ADD_CONTACT: {
             return Object.assign(Object.assign({}, state), { currentView: "contactAdd", contactID: null, contactName: "", contactEmail: "" });
         }
         case actionTypes_1.ADD_CONTACT_TO_LIST: {
-            console.log("contact", action.payload);
             const newContact = { _id: action.payload._id, name: action.payload.name, email: action.payload.email };
             return Object.assign(Object.assign({}, state), { contacts: [...state.contacts, newContact] });
         }
+        case "ADD_MAILBOX_TO_LIST": {
+            const newMailbox = { name: action.payload.name, path: action.payload.path };
+            return Object.assign(Object.assign({}, state), { mailboxes: [...state.mailboxes, newMailbox] });
+        }
+        case "ADD_MESSAGE_TO_LIST": {
+            const currMessage = { id: action.payload.id, date: action.payload.date, from: action.payload.from, subject: action.payload.subject };
+            return Object.assign(Object.assign({}, state), { messages: [...state.messages, currMessage] });
+        }
         case actionTypes_1.SAVE_CONTACT: {
+            console.log("show contact", state.currentView);
             const newContact = { _id: state.contactID, name: state.contactName, email: state.contactEmail };
             return Object.assign(Object.assign({}, state), { contacts: [...state.contacts, newContact], contactID: null, contactName: "", contactEmail: "" });
         }
         case actionTypes_1.DELETE_CONTACT: {
             return Object.assign(Object.assign({}, state), { contacts: state.contacts.filter((inElement) => inElement._id != state.contactID), contactID: null, contactName: "", contactEmail: "" });
+        }
+        case "FIELD_CHANGE": {
+            if (action.payload.fieldName === "contactEmail") {
+                return Object.assign(Object.assign({}, state), { contactEmail: action.payload.contactEmail });
+            }
+            else if (action.payload.fieldName === "contactName") {
+                return Object.assign(Object.assign({}, state), { contactName: action.payload.contactName });
+            }
+        }
+        case "COMPOSE_MESSAGE_NEW": {
+            return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: "", messageSubject: "", messageBody: "", messageFrom: config_1.config.userEmail });
+        }
+        case "COMPOSE_MESSAGE_REPLY": {
+            return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: state.messageFrom, messageSubject: `Re: ${state.messageSubject}`, messageBody: `\n\n---- Original Message ----\n\n${state.messageBody}`, messageFrom: config_1.config.userEmail });
+        }
+        case "COMPOSE_MESSAGE_CONTACT": {
+            return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: state.contactEmail, messageSubject: "", messageBody: "", messageFrom: config_1.config.userEmail });
+        }
+        case "SET_CURRENT_MAILBOX": {
+            return Object.assign(Object.assign({}, state), { currentView: "welcome", currentMailbox: action.payload.mailPath });
+        }
+        case "GET_MESSAGE": {
+            return Object.assign({}, state);
+        }
+        case "CLEAR_MESSAGES": {
+            return Object.assign(Object.assign({}, state), { messages: [] });
+        }
+        case "SHOW_MESSAGE": {
+            return Object.assign(Object.assign({}, state), { currentView: "message", messageID: action.payload.inMessage.id, messageDate: action.payload.inMessage.date, messageFrom: action.payload.inMessage.from, messageTo: "", messageSubject: action.payload.inMessage.subject, messageBody: action.payload.mb });
+        }
+        case "SEND_MESSAGE": {
+            return Object.assign(Object.assign({}, state), { currentView: "welcome" });
+        }
+        case "DELETE_MESSAGE": {
+            return Object.assign(Object.assign({}, state), { messages: state.messages.filter((inElement) => inElement._id != state.messageID), currentView: "welcome" });
+        }
+        case "PLEASE_WAIT_VISIBLE": {
+            console.log(action.payload);
+            return Object.assign(Object.assign({}, state), { isVisible: action.payload.inVisible });
         }
         default:
             return state;
@@ -85150,8 +85119,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
-const contact_1 = __importDefault(__webpack_require__(/*! ./reducers/contact */ "./src/redux/reducers/contact.ts"));
-exports.store = redux_1.createStore(contact_1.default);
+const reducers_1 = __importDefault(__webpack_require__(/*! ./reducers/reducers */ "./src/redux/reducers/reducers.ts"));
+exports.store = redux_1.createStore(reducers_1.default);
 
 
 /***/ })

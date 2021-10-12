@@ -10,12 +10,17 @@ import * as IMAP from "../function/IMAP";
 import * as Contacts from "../function/Contacts";
 
 const onDelete = async (props) => {
+  props.pleaseWaitVisible(true);
   const imapWorker: IMAP.Worker = new IMAP.Worker();
-  await imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(props.deleteContact());
+  await imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(props.deleteContact()).then(()=>{props.pleaseWaitVisible(false);});
+
+
 }
 const onSave = async (props) => {
+  props.pleaseWaitVisible(true);
   const contactsWorker: Contacts.Worker = new Contacts.Worker();
   const contact: Contacts.IContact = await contactsWorker.addContact({ name : props.contactName, email : props.contactEmail }).then(props.saveContact());
+  props.pleaseWaitVisible(false);
 }
 
 /**
@@ -29,19 +34,20 @@ const ContactView = (props:Props) => (
 
     <TextField margin="dense" id="contactName" label="Name" value={ props.contactName } variant="outlined"
       InputProps={{ style : { color : "#000000" } }} disabled={ props.currentView === "contact" } style={{ width:260 }}
-      // onChange={ state.fieldChangeHandler } 
+      onChange={(Event)=> props.fieldChangeHandler({fieldName:Event.target.id,fieldValue:Event.target.value})} 
       />
     <br />
     <TextField margin="dense" id="contactEmail" label="Email" value={ props.contactEmail } variant="outlined"
       InputProps={{ style : { color:"#000000" } }} disabled={ props.currentView === "contact" } style={{ width:520 }}
-      // onChange={ state.fieldChangeHandler } 
+      onChange={(Event)=> props.fieldChangeHandler({fieldName:Event.target.id,fieldValue:Event.target.value})} 
+      // this.setState({ [inEvent.target.id] : inEvent.target.value }); 
       />
     <br />
     { /* Hide.show buttons as appropriate.  Note that we have to use this form of onClick() otherwise the event  */ }
     { /* object would be passed to addContact() and the branching logic would fail. */ }
     { props.currentView === "contactAdd" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-        onClick={props.saveContact}>
+        onClick={() => onSave(props)}>
         Save
       </Button>
     }
@@ -53,8 +59,8 @@ const ContactView = (props:Props) => (
     }
     { props.currentView === "contact" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-      onClick={ () => onSave(props) }
-      >Send Email</Button>
+      onClick={ () => props.composeMessage("contact") }>
+        Send Email</Button>
     }
 
   </form>

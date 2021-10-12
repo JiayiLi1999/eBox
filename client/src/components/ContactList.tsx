@@ -19,14 +19,14 @@ import {Props} from "./BaseLayout";
 const onClick = (props,value) => {
   console.log("click!");
   console.log(value._id,value.name);
-  props.showContact({currentView : "contact", contactID : value._id, contactName : value.name, contactEmail : value.email});
+  props.showContact({contactID : value._id, contactName : value.name, contactEmail : value.email});
 }
 
 const ContactList = (props:Props) => (
   <List>
     {props.contacts.map(value => {
       return (
-        <ListItem>
+        <ListItem key={value._id}>
           <ListItemAvatar>
           <Avatar>
             <Person />

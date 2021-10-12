@@ -4,69 +4,94 @@ import { InputBase } from "@material-ui/core";
 import { TextField } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
+import {Props} from "./BaseLayout";
+import * as IMAP from "../function/IMAP";
+import * as SMTP from "../function/SMTP";
 
 /**
  * MessageView.
  */
-const MessageView = ({ state }) => (
+
+const onSendMessage = async(props) =>{
+  props.pleaseWaitVisible(true);
+  const imapWorker: IMAP.Worker = new IMAP.Worker();
+  await imapWorker.deleteMessage(props.messageID, props.currentMailbox).then(()=>{props.pleaseWaitVisible(false);});
+  props.deleteMessage();
+}
+
+const onDeleteMessage = async(props) =>{
+  props.pleaseWaitVisible(true);
+  const smtpWorker: SMTP.Worker = new SMTP.Worker();
+  await smtpWorker.sendMessage(props.messageTo, props.messageFrom, props.messageSubject,props.messageBody).then(()=>{props.pleaseWaitVisible(false);});
+  props.sendMessage();
+}
+
+const MessageView = ( props:Props ) => (
 
   <form>
 
     { /* ----- Message ID and date, just for informational purposes. ----- */ }
-    { state.currentView === "message" &&
-      <InputBase defaultValue={ `ID ${state.messageID}` } margin="dense" disabled={ true } fullWidth={ true }
+    { props.currentView === "message" &&
+      <InputBase defaultValue={ `ID ${props.messageID}` } margin="dense" disabled={ true } fullWidth={ true }
         className="messageInfoField" />
     }
-    { state.currentView === "message" && <br /> }
-    { state.currentView === "message" &&
-      <InputBase defaultValue={ state.messageDate } margin="dense" disabled={ true } fullWidth={ true }
+    { props.currentView === "message" && <br /> }
+    { props.currentView === "message" &&
+      <InputBase defaultValue={ props.messageDate } margin="dense" disabled={ true } fullWidth={ true }
         className="messageInfoField" />
     }
-    { state.currentView === "message" && <br /> }
+    { props.currentView === "message" && <br /> }
 
     { /* ----- From. ----- */ }
-    { state.currentView === "message" &&
-      <TextField margin="dense" variant="outlined" fullWidth={ true } label="From" value={ state.messageFrom }
+    { props.currentView === "message" &&
+      <TextField margin="dense" variant="outlined" fullWidth={ true } label="From" value={ props.messageFrom }
         disabled={ true } InputProps={{ style : { color : "#000000" } }} />
     }
-    { state.currentView === "message" && <br /> }
+    { props.currentView === "message" && <br /> }
 
     { /* ----- To. ----- */ }
-    { state.currentView === "compose" &&
+    { props.currentView === "compose" &&
       <TextField margin="dense" id="messageTo" variant="outlined" fullWidth={ true } label="To"
-        value={ state.messageTo } InputProps={{ style : { color : "#000000" } }}
-        onChange={ state.fieldChangeHandler } />
+        value={ props.messageTo } InputProps={{ style : { color : "#000000" } }}
+        // onChange={ props.fieldChangeHandler } 
+        />
     }
-    { state.currentView === "compose" && <br /> }
+    { props.currentView === "compose" && <br /> }
 
     { /* ----- Subject. ----- */ }
     <TextField margin="dense" id="messageSubject" label="Subject" variant="outlined" fullWidth={ true }
-      value={ state.messageSubject } disabled={ state.currentView === "message" }
-      InputProps={{ style : { color : "#000000" } }} onChange={ state.fieldChangeHandler } />
+      value={ props.messageSubject } disabled={ props.currentView === "message" }
+      InputProps={{ style : { color : "#000000" } }} 
+      // onChange={ props.fieldChangeHandler } 
+      />
     <br />
 
     { /* ----- Message body. ----- */ }
     <TextField margin="dense" id="messageBody" variant="outlined" fullWidth={ true } multiline={ true } rows={ 12 }
-      value={ state.messageBody } disabled={ state.currentView === "message" }
-      InputProps={{ style : { color : "#000000" } }} onChange={ state.fieldChangeHandler } />
+      value={ props.messageBody } disabled={ props.currentView === "message" }
+      InputProps={{ style : { color : "#000000" } }} 
+      // onChange={ props.fieldChangeHandler } 
+      />
 
     { /* ----- Buttons. ----- */ }
 
-    { state.currentView === "compose" &&
+    { props.currentView === "compose" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-        onClick={ state.sendMessage }>
+        onClick={()=>onSendMessage(props)}
+        >
       Send
     </Button>
     }
-    { state.currentView === "message" &&
+    { props.currentView === "message" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10, marginRight:10 }}
-        onClick={ () => state.showComposeMessage("reply") }>
+        onClick={ () => props.composeMessage("reply") }>
         Reply
       </Button>
     }
-    { state.currentView === "message" &&
+    { props.currentView === "message" &&
       <Button variant="contained" color="primary" size="small" style={{ marginTop:10 }}
-        onClick={ state.deleteMessage }>
+        onClick={() => onDeleteMessage(props) }
+        >
         Delete
       </Button>
     }
