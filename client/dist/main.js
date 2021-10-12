@@ -81707,6 +81707,38 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/redux-thunk/es/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/redux-thunk/es/index.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function createThunkMiddleware(extraArgument) {
+  return function (_ref) {
+    var dispatch = _ref.dispatch,
+        getState = _ref.getState;
+    return function (next) {
+      return function (action) {
+        if (typeof action === 'function') {
+          return action(dispatch, getState, extraArgument);
+        }
+
+        return next(action);
+      };
+    };
+  };
+}
+
+var thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+/* harmony default export */ __webpack_exports__["default"] = (thunk);
+
+/***/ }),
+
 /***/ "./node_modules/redux/es/redux.js":
 /*!****************************************!*\
   !*** ./node_modules/redux/es/redux.js ***!
@@ -84316,43 +84348,8 @@ const MessageView_1 = __importDefault(__webpack_require__(/*! ./MessageView */ "
 const react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 const Contacts = __importStar(__webpack_require__(/*! ../function/Contacts */ "./src/function/Contacts.ts"));
 const IMAP = __importStar(__webpack_require__(/*! ../function/IMAP */ "./src/function/IMAP.ts"));
-const mapState = (state) => ({
-    isVisible: state.isVisible,
-    contacts: state.contacts,
-    isOn: state.isOn,
-    currentView: state.currentView,
-    contactID: state.contactID,
-    contactName: state.contactName,
-    contactEmail: state.contactEmail,
-    messageID: state.messageID,
-    messageDate: state.messageDate,
-    messageFrom: state.messageFrom,
-    messageTo: state.messageTo,
-    messageSubject: state.messageSubject,
-    messageBody: state.messageBody,
-    mailboxes: state.mailboxes,
-    messages: state.messages,
-    currentMailbox: state.currentMailbox,
-});
-const mapDispatch = {
-    addContactToList: (inContact) => ({ type: "ADD_CONTACT_TO_LIST", payload: inContact }),
-    addMailboxToList: (inMailbox) => ({ type: "ADD_MAILBOX_TO_LIST", payload: inMailbox }),
-    addMessageToList: (inMessage) => ({ type: "ADD_MESSAGE_TO_LIST", payload: inMessage }),
-    showContact: (inContact) => ({ type: "SHOW_CONTACT", payload: inContact }),
-    saveContact: () => ({ type: "SAVE_CONTACT", payload: {} }),
-    deleteContact: () => ({ type: "DELETE_CONTACT", payload: {} }),
-    fieldChangeHandler: (field) => ({ type: "FIELD_CHANGE", payload: field }),
-    composeMessage: (inType) => ({ type: inType, payload: {} }),
-    addContact: () => ({ type: "ADD_CONTACT", payload: {} }),
-    setCurrentMailbox: (inPath) => ({ type: "SET_CURRENT_MAILBOX", payload: inPath }),
-    getMessage: (messages) => ({ type: "GET_MESSAGE", payload: messages }),
-    clearMessages: () => ({ type: "CLEAR_MESSAGES", payload: {} }),
-    showMessage: (inMessage, mb) => ({ type: "SHOW_MESSAGE", payload: { inMessage, mb } }),
-    sendMessage: () => ({ type: "SEND_MESSAGE", payload: {} }),
-    deleteMessage: () => ({ type: "DELETE_MESSAGE", payload: {} }),
-    pleaseWaitVisible: (inVisible) => ({ type: "PLEASE_WAIT_VISIBLE", payload: { inVisible } }),
-};
-const connector = react_redux_1.connect(mapState, mapDispatch);
+const Interfaces = __importStar(__webpack_require__(/*! ../constants/interfaces */ "./src/constants/interfaces.ts"));
+const connector = react_redux_1.connect(Interfaces.mapState, Interfaces.mapDispatch);
 class BaseLayout extends react_1.default.Component {
     constructor(props) {
         super(props);
@@ -84436,7 +84433,7 @@ const onClick = (props, value) => {
     console.log(value._id, value.name);
     props.showContact({ contactID: value._id, contactName: value.name, contactEmail: value.email });
 };
-const ContactList = (props) => (react_1.default.createElement(List_1.default, null, props.contacts.map(value => {
+const ContactList = (props) => (react_1.default.createElement(List_1.default, null, props.contacts && props.contacts.map(value => {
     return (react_1.default.createElement(ListItem_1.default, { key: value._id },
         react_1.default.createElement(ListItemAvatar_1.default, null,
             react_1.default.createElement(Avatar_1.default, null,
@@ -84555,7 +84552,7 @@ const onSetCurrentMailbox = (props, inPath) => __awaiter(void 0, void 0, void 0,
     });
 });
 var index = 0;
-const MailboxList = (props) => (react_1.default.createElement(List_1.default, null, props.mailboxes.map(value => {
+const MailboxList = (props) => (react_1.default.createElement(List_1.default, null, props.mailboxes && props.mailboxes.map(value => {
     return (react_1.default.createElement(Chip_1.default, { key: index++, label: `${value.name}`, onClick: () => onSetCurrentMailbox(props, value.path), style: { width: 128, marginBottom: 10 }, color: props.currentMailbox === value.path ? "secondary" : "primary" }));
 })));
 exports.default = MailboxList;
@@ -84759,6 +84756,64 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.config = {
     serverAddress: "http://localhost",
     userEmail: "lijiayi606@gmail.com"
+};
+
+
+/***/ }),
+
+/***/ "./src/constants/interfaces.ts":
+/*!*************************************!*\
+  !*** ./src/constants/interfaces.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const ActionTypes = __importStar(__webpack_require__(/*! ../redux/actionTypes */ "./src/redux/actionTypes.ts"));
+exports.mapState = (state) => ({
+    isVisible: state.isVisible,
+    contacts: state.contacts,
+    isOn: state.isOn,
+    currentView: state.currentView,
+    contactID: state.contactID,
+    contactName: state.contactName,
+    contactEmail: state.contactEmail,
+    messageID: state.messageID,
+    messageDate: state.messageDate,
+    messageFrom: state.messageFrom,
+    messageTo: state.messageTo,
+    messageSubject: state.messageSubject,
+    messageBody: state.messageBody,
+    mailboxes: state.mailboxes,
+    messages: state.messages,
+    currentMailbox: state.currentMailbox,
+});
+exports.mapDispatch = {
+    addContactToList: (inContact) => ({ type: ActionTypes.ADD_CONTACT_TO_LIST, payload: inContact }),
+    addMailboxToList: (inMailbox) => ({ type: ActionTypes.ADD_MAILBOX_TO_LIST, payload: inMailbox }),
+    addMessageToList: (inMessage) => ({ type: ActionTypes.ADD_MESSAGE_TO_LIST, payload: inMessage }),
+    showContact: (inContact) => ({ type: ActionTypes.SHOW_CONTACT, payload: inContact }),
+    saveContact: () => ({ type: ActionTypes.SAVE_CONTACT, payload: {} }),
+    deleteContact: () => ({ type: ActionTypes.DELETE_CONTACT, payload: {} }),
+    fieldChangeHandler: (field) => ({ type: ActionTypes.FIELD_CHANGE, payload: field }),
+    composeMessage: (inType) => ({ type: ActionTypes.COMPOSE_MESSAGE, payload: inType }),
+    addContact: () => ({ type: ActionTypes.ADD_CONTACT, payload: {} }),
+    setCurrentMailbox: (inPath) => ({ type: ActionTypes.SET_CURRENT_MAILBOX, payload: inPath }),
+    getMessage: (messages) => ({ type: ActionTypes.GET_MESSAGE, payload: messages }),
+    clearMessages: () => ({ type: ActionTypes.CLEAR_MESSAGES, payload: {} }),
+    showMessage: (inMessage, mb) => ({ type: ActionTypes.SHOW_MESSAGE, payload: { inMessage, mb } }),
+    sendMessage: () => ({ type: ActionTypes.SEND_MESSAGE, payload: {} }),
+    deleteMessage: () => ({ type: ActionTypes.DELETE_MESSAGE, payload: {} }),
+    pleaseWaitVisible: (inVisible) => ({ type: ActionTypes.PLEASE_WAIT_VISIBLE, payload: { inVisible } }),
 };
 
 
@@ -84984,13 +85039,54 @@ exports.ADD_MAILBOX_TO_LIST = "ADD_MAILBOX_TO_LIST";
 exports.ADD_CONTACT_TO_LIST = "ADD_CONTACT_TO_LIST";
 exports.ADD_MESSAGE_TO_LIST = "ADD_MESSAGE_TO_LIST";
 exports.CLEAR_MESSAGE = "CLEAR_MESSAGE";
-exports.SET_CURRENT_MAILBOX = "SET_CURRENT_MAILBOX";
 exports.GET_MESSAGE = "GET_MESSAGE";
 exports.FIELD_CHANGE = "FIELD_CHANGE";
 exports.SAVE_CONTACT = "SAVE_CONTACT";
 exports.DELETE_CONTACT = "DELETE_CONTACT";
+exports.COMPOSE_MESSAGE_NEW = "COMPOSE_MESSAGE_NEW";
+exports.COMPOSE_MESSAGE_REPLY = "COMPOSE_MESSAGE_REPLY";
+exports.COMPOSE_MESSAGE_CONTACT = "COMPOSE_MESSAGE_CONTACT";
+exports.SET_CURRENT_MAILBOX = "SET_CURRENT_MAILBOX";
+exports.CLEAR_MESSAGES = "CLEAR_MESSAGES";
 exports.SEND_MESSAGE = "SEND_MESSAGE";
 exports.DELETE_MESSAGE = "DELETE_MESSAGE";
+exports.PLEASE_WAIT_VISIBLE = "PLEASE_WAIT_VISIBLE";
+
+
+/***/ }),
+
+/***/ "./src/redux/reducers/index.ts":
+/*!*************************************!*\
+  !*** ./src/redux/reducers/index.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const reducers_1 = __importDefault(__webpack_require__(/*! ./reducers */ "./src/redux/reducers/reducers.ts"));
+exports.InitialState = {
+    isOn: false,
+    isVisible: false,
+    currentView: "welcome",
+    contacts: [],
+    contactID: null,
+    contactName: null,
+    contactEmail: null,
+    messageID: null,
+    messageDate: null,
+    messageFrom: null,
+    messageTo: null,
+    messageSubject: null,
+    messageBody: null,
+    messages: [],
+    mailboxes: [],
+};
+exports.default = reducers_1.default;
 
 
 /***/ }),
@@ -85007,7 +85103,7 @@ exports.DELETE_MESSAGE = "DELETE_MESSAGE";
 Object.defineProperty(exports, "__esModule", { value: true });
 const actionTypes_1 = __webpack_require__(/*! ../actionTypes */ "./src/redux/actionTypes.ts");
 const config_1 = __webpack_require__(/*! ../../constants/config */ "./src/constants/config.ts");
-const initialState = {
+exports.initialState = {
     isOn: false,
     isVisible: false,
     contacts: [],
@@ -85025,7 +85121,7 @@ const initialState = {
     messages: [],
     currentMailbox: null,
 };
-function default_1(state = initialState, action) {
+function default_1(state = exports.initialState, action) {
     switch (action.type) {
         case "TOGGLE_IS_ON": {
             return Object.assign(Object.assign({}, state), { isOn: !state.isOn });
@@ -85041,11 +85137,11 @@ function default_1(state = initialState, action) {
             const newContact = { _id: action.payload._id, name: action.payload.name, email: action.payload.email };
             return Object.assign(Object.assign({}, state), { contacts: [...state.contacts, newContact] });
         }
-        case "ADD_MAILBOX_TO_LIST": {
+        case actionTypes_1.ADD_MAILBOX_TO_LIST: {
             const newMailbox = { name: action.payload.name, path: action.payload.path };
             return Object.assign(Object.assign({}, state), { mailboxes: [...state.mailboxes, newMailbox] });
         }
-        case "ADD_MESSAGE_TO_LIST": {
+        case actionTypes_1.ADD_MESSAGE_TO_LIST: {
             const currMessage = { id: action.payload.id, date: action.payload.date, from: action.payload.from, subject: action.payload.subject };
             return Object.assign(Object.assign({}, state), { messages: [...state.messages, currMessage] });
         }
@@ -85057,7 +85153,7 @@ function default_1(state = initialState, action) {
         case actionTypes_1.DELETE_CONTACT: {
             return Object.assign(Object.assign({}, state), { contacts: state.contacts.filter((inElement) => inElement._id != state.contactID), contactID: null, contactName: "", contactEmail: "" });
         }
-        case "FIELD_CHANGE": {
+        case actionTypes_1.FIELD_CHANGE: {
             if (action.payload.fieldName === "contactEmail") {
                 return Object.assign(Object.assign({}, state), { contactEmail: action.payload.contactEmail });
             }
@@ -85065,34 +85161,34 @@ function default_1(state = initialState, action) {
                 return Object.assign(Object.assign({}, state), { contactName: action.payload.contactName });
             }
         }
-        case "COMPOSE_MESSAGE_NEW": {
+        case actionTypes_1.COMPOSE_MESSAGE_NEW: {
             return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: "", messageSubject: "", messageBody: "", messageFrom: config_1.config.userEmail });
         }
-        case "COMPOSE_MESSAGE_REPLY": {
+        case actionTypes_1.COMPOSE_MESSAGE_REPLY: {
             return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: state.messageFrom, messageSubject: `Re: ${state.messageSubject}`, messageBody: `\n\n---- Original Message ----\n\n${state.messageBody}`, messageFrom: config_1.config.userEmail });
         }
-        case "COMPOSE_MESSAGE_CONTACT": {
+        case actionTypes_1.COMPOSE_MESSAGE_CONTACT: {
             return Object.assign(Object.assign({}, state), { currentView: "compose", messageTo: state.contactEmail, messageSubject: "", messageBody: "", messageFrom: config_1.config.userEmail });
         }
-        case "SET_CURRENT_MAILBOX": {
+        case actionTypes_1.SET_CURRENT_MAILBOX: {
             return Object.assign(Object.assign({}, state), { currentView: "welcome", currentMailbox: action.payload.mailPath });
         }
-        case "GET_MESSAGE": {
+        case actionTypes_1.GET_MESSAGE: {
             return Object.assign({}, state);
         }
-        case "CLEAR_MESSAGES": {
+        case actionTypes_1.CLEAR_MESSAGES: {
             return Object.assign(Object.assign({}, state), { messages: [] });
         }
-        case "SHOW_MESSAGE": {
+        case actionTypes_1.SHOW_MESSAGE: {
             return Object.assign(Object.assign({}, state), { currentView: "message", messageID: action.payload.inMessage.id, messageDate: action.payload.inMessage.date, messageFrom: action.payload.inMessage.from, messageTo: "", messageSubject: action.payload.inMessage.subject, messageBody: action.payload.mb });
         }
-        case "SEND_MESSAGE": {
+        case actionTypes_1.SEND_MESSAGE: {
             return Object.assign(Object.assign({}, state), { currentView: "welcome" });
         }
-        case "DELETE_MESSAGE": {
+        case actionTypes_1.DELETE_MESSAGE: {
             return Object.assign(Object.assign({}, state), { messages: state.messages.filter((inElement) => inElement._id != state.messageID), currentView: "welcome" });
         }
-        case "PLEASE_WAIT_VISIBLE": {
+        case actionTypes_1.PLEASE_WAIT_VISIBLE: {
             console.log(action.payload);
             return Object.assign(Object.assign({}, state), { isVisible: action.payload.inVisible });
         }
@@ -85119,8 +85215,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
-const reducers_1 = __importDefault(__webpack_require__(/*! ./reducers/reducers */ "./src/redux/reducers/reducers.ts"));
-exports.store = redux_1.createStore(reducers_1.default);
+const redux_thunk_1 = __importDefault(__webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js"));
+const index_1 = __importDefault(__webpack_require__(/*! ./reducers/index */ "./src/redux/reducers/index.ts"));
+exports.store = redux_1.createStore(index_1.default, redux_1.applyMiddleware(redux_thunk_1.default));
+console.log("store", exports.store.getState());
 
 
 /***/ })

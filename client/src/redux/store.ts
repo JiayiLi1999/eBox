@@ -1,7 +1,11 @@
-import { createStore } from "redux";
-import rootReducer from "./reducers/reducers";
+import { applyMiddleware, createStore } from "redux";
+import thunkMiddleware from 'redux-thunk';
+import rootReducer from "./reducers/index";
 
-export const store = createStore(rootReducer);
+export const store = createStore(rootReducer,applyMiddleware(
+    thunkMiddleware, 
+));
+console.log("store",store.getState())
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>

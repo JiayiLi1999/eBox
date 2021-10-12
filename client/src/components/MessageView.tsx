@@ -4,7 +4,7 @@ import { InputBase } from "@material-ui/core";
 import { TextField } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
-import {Props} from "./BaseLayout";
+import {Props} from "../constants/interfaces";
 import * as IMAP from "../function/IMAP";
 import * as SMTP from "../function/SMTP";
 

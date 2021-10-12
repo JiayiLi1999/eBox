@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import NewContactIcon from "@material-ui/icons/ContactMail";
 import NewMessageIcon from "@material-ui/icons/Email";
 
-import {Props} from "./BaseLayout";
+import {Props} from "../constants/interfaces";
 
 /**
  * Toolbar.

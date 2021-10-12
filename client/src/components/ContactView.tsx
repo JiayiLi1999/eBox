@@ -5,7 +5,7 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import { TextField } from "@material-ui/core";
 
-import {Props} from "./BaseLayout";
+import {Props} from "../constants/interfaces";
 import * as IMAP from "../function/IMAP";
 import * as Contacts from "../function/Contacts";
 

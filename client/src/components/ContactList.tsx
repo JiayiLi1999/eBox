@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import ListItemText from "@material-ui/core/ListItemText";
 import { connect, ConnectedProps, useSelector } from "react-redux";
 
-import {Props} from "./BaseLayout";
+import {Props} from "../constants/interfaces";
 
 /**
  * Contacts.
@@ -24,7 +24,7 @@ const onClick = (props,value) => {
 
 const ContactList = (props:Props) => (
   <List>
-    {props.contacts.map(value => {
+    {props.contacts && props.contacts.map(value => {
       return (
         <ListItem key={value._id}>
           <ListItemAvatar>

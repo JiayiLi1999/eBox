@@ -10,7 +10,7 @@ import TableRow from "@material-ui/core/TableRow";
 
 import * as IMAP from "../function/IMAP";
 
-import {Props} from "./BaseLayout";
+import {Props} from "../constants/interfaces";
 
 /**
  * MessageList.

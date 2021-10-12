@@ -1,5 +1,5 @@
 import { Adb } from '@material-ui/icons';
-import{SHOW_CONTACT,ADD_CONTACT,SAVE_CONTACT,DELETE_CONTACT,ADD_CONTACT_TO_LIST} from './actionTypes';
+import{SHOW_CONTACT,ADD_CONTACT,SAVE_CONTACT,DELETE_CONTACT,ADD_CONTACT_TO_LIST, FIELD_CHANGE, ADD_MAILBOX_TO_LIST, COMPOSE_MESSAGE_NEW, COMPOSE_MESSAGE_REPLY, COMPOSE_MESSAGE_CONTACT, SET_CURRENT_MAILBOX, GET_MESSAGE, CLEAR_MESSAGES, SHOW_MESSAGE, SEND_MESSAGE, DELETE_MESSAGE, PLEASE_WAIT_VISIBLE, ADD_MESSAGE_TO_LIST} from './actionTypes';
 import * as Contacts from "../function/Contacts";
 import * as IMAP from "../function/IMAP";
 import * as SMTP from "../function/SMTP";
@@ -51,18 +51,18 @@ export function composeMessage(inType:string):contactMode{
 
         case "new":
             return{
-                type:"COMPOSE_MESSAGE_NEW",
+                type:COMPOSE_MESSAGE_NEW,
                 payload:{}
             }
         case "reply":
             return{
-                type:"COMPOSE_MESSAGE_REPLY",
+                type:COMPOSE_MESSAGE_REPLY,
                 payload:{}
             }
 
         case "contact":
             return{
-                type:"COMPOSE_MESSAGE_CONTACT",
+                type:COMPOSE_MESSAGE_CONTACT,
                 payload:{}
             }
 
@@ -117,7 +117,7 @@ export function addContactToList(inContact:Contacts.IContact):contactMode{
 
 export function addMailboxToList(inMailbox: IMAP.IMailbox):contactMode{
     return{
-        type:"ADD_MAILBOX_TO_LIST",
+        type:ADD_MAILBOX_TO_LIST,
         payload:{
             mailbox:inMailbox,
         }
@@ -125,7 +125,7 @@ export function addMailboxToList(inMailbox: IMAP.IMailbox):contactMode{
 }
 export function addMessageToList(inMessage: IMAP.IMessage):contactMode{
     return{
-        type:"ADD_MESSAGE_TO_LIST",
+        type:ADD_MESSAGE_TO_LIST,
         payload:{
             mailMessage:inMessage,
         }
@@ -134,7 +134,7 @@ export function addMessageToList(inMessage: IMAP.IMessage):contactMode{
 
 export function setCurrentMailbox(inPath: string):contactMode{
     return{
-        type:"SET_CURRENT_MAILBOX",
+        type:SET_CURRENT_MAILBOX,
         payload:{
             mailPath:inPath,
         }
@@ -143,7 +143,7 @@ export function setCurrentMailbox(inPath: string):contactMode{
 
 export function getMessage(messages: IMAP.IMessage[]):contactMode{
     return{
-        type:"GET_MESSAGE",
+        type:GET_MESSAGE,
         payload:{
             mailMessages:messages,
         }
@@ -152,7 +152,7 @@ export function getMessage(messages: IMAP.IMessage[]):contactMode{
 
 export function clearMessages (): contactMode {
     return{
-        type:"CLEAR_MESSAGES",
+        type:CLEAR_MESSAGES,
         payload:{
             
         }
@@ -161,7 +161,7 @@ export function clearMessages (): contactMode {
 
 export function showMessage(inMessage: IMAP.IMessage,mb: string):contactMode{
     return{
-        type:"SHOW_MESSAGE",
+        type:SHOW_MESSAGE,
         payload:{
             mailMessage:inMessage,
             messageBody: mb,
@@ -171,21 +171,21 @@ export function showMessage(inMessage: IMAP.IMessage,mb: string):contactMode{
 
 export function sendMessage():contactMode{
     return{
-        type:"SEND_MESSAGE",
+        type:SEND_MESSAGE,
         payload:{}
     }
 }
 
 export function deleteMessage():contactMode{
     return{
-        type:"DELETE_MESSAGE",
+        type:DELETE_MESSAGE,
         payload:{}
     }
 }
 
 export function pleaseWaitVisible(inVisible: boolean):contactMode{
     return{
-        type:"PLEASE_WAIT_VISIBLE",
+        type:PLEASE_WAIT_VISIBLE,
         payload:{inVisible}
     }
 }

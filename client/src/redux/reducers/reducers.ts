@@ -1,11 +1,11 @@
-import{SHOW_CONTACT,ADD_CONTACT,SAVE_CONTACT,DELETE_CONTACT,ADD_CONTACT_TO_LIST} from '../actionTypes';
+import{SHOW_CONTACT,ADD_CONTACT,SAVE_CONTACT,DELETE_CONTACT,ADD_CONTACT_TO_LIST, FIELD_CHANGE, ADD_MAILBOX_TO_LIST, COMPOSE_MESSAGE_NEW, COMPOSE_MESSAGE_REPLY, COMPOSE_MESSAGE_CONTACT, SET_CURRENT_MAILBOX, GET_MESSAGE, CLEAR_MESSAGES, SHOW_MESSAGE, SEND_MESSAGE, DELETE_MESSAGE, PLEASE_WAIT_VISIBLE, ADD_MESSAGE_TO_LIST} from '../actionTypes';
 import * as Contacts from "../../function/Contacts";
 import { config } from "../../constants/config";
 
 import { Reducer } from 'redux';
 import { MessageSharp } from '@material-ui/icons';
 
-const initialState = {
+export const initialState = {
     isOn:false,
     isVisible:false,
     contacts : [ ],
@@ -67,7 +67,7 @@ export default function(state = initialState, action) {
           contacts:[...state.contacts,newContact],
         };
       }
-      case "ADD_MAILBOX_TO_LIST":{
+      case ADD_MAILBOX_TO_LIST:{
         // console.log("mail",action.payload);
         const newMailbox = {name:action.payload.name,path:action.payload.path};
         return {
@@ -75,7 +75,7 @@ export default function(state = initialState, action) {
           mailboxes:[...state.mailboxes,newMailbox],
         };
       }
-      case "ADD_MESSAGE_TO_LIST":{
+      case ADD_MESSAGE_TO_LIST:{
         // console.log("mail",action.payload);
         const currMessage = { id : action.payload.id, date : action.payload.date, from : action.payload.from, subject : action.payload.subject };
         return{
@@ -104,7 +104,7 @@ export default function(state = initialState, action) {
             contactEmail : "",
           }
       }
-      case "FIELD_CHANGE":{
+      case FIELD_CHANGE:{
         if(action.payload.fieldName==="contactEmail"){
           return{
             ...state,
@@ -117,7 +117,7 @@ export default function(state = initialState, action) {
         }
         }
       }
-      case "COMPOSE_MESSAGE_NEW":{
+      case COMPOSE_MESSAGE_NEW:{
         return{
           ...state,
           currentView:"compose",
@@ -128,7 +128,7 @@ export default function(state = initialState, action) {
         }
       }
 
-      case "COMPOSE_MESSAGE_REPLY":{
+      case COMPOSE_MESSAGE_REPLY:{
         return{
           ...state,
           currentView:"compose",
@@ -139,7 +139,7 @@ export default function(state = initialState, action) {
         }
 
       }
-      case "COMPOSE_MESSAGE_CONTACT":{
+      case COMPOSE_MESSAGE_CONTACT:{
         return{
           ...state,
           currentView:"compose",
@@ -149,26 +149,26 @@ export default function(state = initialState, action) {
           messageFrom : config.userEmail,
         }
       }
-      case "SET_CURRENT_MAILBOX":{
+      case SET_CURRENT_MAILBOX:{
         return{
           ...state,
           currentView : "welcome", 
           currentMailbox : action.payload.mailPath,
         }
       }
-      case "GET_MESSAGE":{
+      case GET_MESSAGE:{
         return{
           ...state,
         }
       }
 
-      case "CLEAR_MESSAGES":{
+      case CLEAR_MESSAGES:{
         return{
           ...state,
           messages:[]
         }
       }
-      case "SHOW_MESSAGE":{
+      case SHOW_MESSAGE:{
         return{
           ...state,
           currentView : "message",
@@ -180,20 +180,20 @@ export default function(state = initialState, action) {
           messageBody: action.payload.mb,
         }
       }
-      case "SEND_MESSAGE":{
+      case SEND_MESSAGE:{
         return{
           ...state,
           currentView : "welcome",
         }
       }
-      case "DELETE_MESSAGE":{
+      case DELETE_MESSAGE:{
         return{
           ...state,
           messages:state.messages.filter((inElement) => inElement._id != state.messageID),
           currentView : "welcome",
         }
       }
-      case "PLEASE_WAIT_VISIBLE":{
+      case PLEASE_WAIT_VISIBLE:{
         console.log(action.payload)
         return{
           ...state,

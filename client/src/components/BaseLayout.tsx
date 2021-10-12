@@ -15,117 +15,24 @@ import ContactList from "./ContactList";
 import WelcomeView from "./WelcomeView";
 import ContactView from "./ContactView";
 import MessageView from "./MessageView";
-import { createState } from "../constants/state";
 import { connect, ConnectedProps } from "react-redux";
 
 import * as Contacts from "../function/Contacts";
 import * as IMAP from "../function/IMAP";
 import * as SMTP from "../function/SMTP";
 
-
-interface Contact{ 
-  _id : string,
-  name : string,
-  email : string 
-}
-
-interface mainInterface {
-  isVisible?:boolean,
-  contacts?: Contact[],
-  isOn?: boolean,
-  currentView ?: string,
-  contactID ?: string,
-  contactName ?: string,
-  contactEmail ?: string,
-  messageID ?: string,
-  messageDate ?: string,
-  messageFrom ?: string,
-  messageTo ?: string,
-  messageSubject ?: string,
-  messageBody ?: string,
-  mailboxes ?: IMAP.IMailbox[],
-  messages ?: IMAP.IMessage[],
-  currentMailbox ?: string,
-}
-
-interface IContactView{ currentView ?: string, contactID ?: string, contactName ?: string, contactEmail ?: string }
-interface fieldChanger{ fieldName:string,fieldValue:string}
-
-interface DispatchProps {
-  addContactToList?:(inContact:Contacts.IContact)=>void;
-  addMailboxToList?:(inMailbox: IMAP.IMailbox)=>void;
-  addMessageToList?:(inMessage: IMAP.IMessage)=>void;
-  showContact?:(inContact:IContactView)=>void;
-  saveContact?:()=>void;
-  deleteContact?:()=>void;
-  fieldChangeHandler?:(field:fieldChanger)=>void;
-  composeMessage?:(inType:string)=>void;
-  addContact?:()=>void;
-  setCurrentMailbox?:(inPath: string)=>void;
-  getMessage?:(messages: IMAP.IMessage[])=>void;
-  clearMessages ?: ()=>void;
-  showMessage?:(inMessage: IMAP.IMessage,mb: string)=>void;
-  sendMessage?:()=>void;
-  deleteMessage?:()=>void;
-  pleaseWaitVisible?:(inVisible: boolean)=>void;
-}
+import * as Interfaces from "../constants/interfaces";
 
 
-const mapState = (state: mainInterface) => ({
-  isVisible:state.isVisible,
-  contacts:state.contacts,
-  isOn: state.isOn,
-  currentView : state.currentView,
-  contactID : state.contactID,
-  contactName : state.contactName,
-  contactEmail : state.contactEmail,
-  messageID : state.messageID,
-  messageDate : state.messageDate,
-  messageFrom : state.messageFrom,
-  messageTo : state.messageTo,
-  messageSubject : state.messageSubject,
-  messageBody : state.messageBody,
-  mailboxes : state.mailboxes,
-  messages : state.messages,
-  currentMailbox : state.currentMailbox,
-})
-
-
-
-export type Props =  mainInterface & DispatchProps;
-
-
-const mapDispatch = {
-  // showContact:(id,name,email) => ({inID: id, inName:name, inEmail:email}),
-  addContactToList:(inContact) => ({type:"ADD_CONTACT_TO_LIST",payload:inContact}),
-  addMailboxToList:(inMailbox)=>({type:"ADD_MAILBOX_TO_LIST",payload:inMailbox}),
-  addMessageToList:(inMessage: IMAP.IMessage)=>({type:"ADD_MESSAGE_TO_LIST",payload:inMessage}),
-  showContact:(inContact:IContactView)=>({type:"SHOW_CONTACT",payload:inContact}),
-  saveContact:()=>({type:"SAVE_CONTACT",payload:{}}),
-  deleteContact:()=>({type:"DELETE_CONTACT",payload:{}}),
-  fieldChangeHandler:(field)=>({type:"FIELD_CHANGE",payload:field}),
-  composeMessage:(inType:string)=>({type:inType,payload:{}}),
-  addContact:()=>({type:"ADD_CONTACT",payload:{}}),
-  setCurrentMailbox:(inPath)=>({type:"SET_CURRENT_MAILBOX",payload:inPath}),
-  getMessage:(messages)=>({type:"GET_MESSAGE",payload:messages}),
-  clearMessages:()=>({type:"CLEAR_MESSAGES",payload:{}}),
-  showMessage:(inMessage: IMAP.IMessage,mb: string)=>({type:"SHOW_MESSAGE",payload:{inMessage,mb}}),
-  sendMessage:()=>({type:"SEND_MESSAGE",payload:{}}),
-  deleteMessage:()=>({type:"DELETE_MESSAGE",payload:{}}),
-  pleaseWaitVisible:(inVisible)=>({type:"PLEASE_WAIT_VISIBLE",payload:{inVisible}}),
-}
-
-const connector = connect(mapState,mapDispatch);
+const connector = connect(Interfaces.mapState,Interfaces.mapDispatch);
 
 // The inferred type will look like:
 type PropsFromRedux = ConnectedProps<typeof connector>
-export interface MyProps extends PropsFromRedux {}
-
 
 /**
  * BaseLayout.
  */
-class BaseLayout extends React.Component<MyProps> {
+class BaseLayout extends React.Component<PropsFromRedux> {
 
   constructor(props) {
     super(props);
@@ -157,19 +64,6 @@ class BaseLayout extends React.Component<MyProps> {
     console.log("hi",contacts.length);
   }
 
-
-
-  /**
-   * State data for the app.  This also includes all mutator functions for manipulating state.  That way, we only
-   * ever have to pass this entire object down through props (not necessarily the best design in terms of data
-   * encapsulation, but it does have the benefit of being quite a bit simpler).
-   */
-  // state = createState(this);
-
-
-  /**
-   * Render().
-   */
   render() {
     // this.getContacts().then(()=>console.log("finish"));
     return (
