@@ -3,8 +3,8 @@
     "host" : "imap.gmail.com",
     "port" : 993,
     "auth" : {
-      "user" : "lijiayi606@gmail.com",
-      "pass" : "Ajia990817"
+      "user" : "YOUR_EMAIL_ADDRESS",
+      "pass" : "YOUR_EMAIL_PASSWORD"
     },
     "secure":true
   },
@@ -12,8 +12,8 @@
     "host" : "imap.gmail.com",
     "port" : 993,
     "auth" : {
-      "user" : "lijiayi606@gmail.com",
-      "pass" : "Ajia990817"
+      "user" : "YOUR_EMAIL_ADDRESS",
+      "pass" : "YOUR_EMAIL_PASSWORD"
     }
   }
 }
